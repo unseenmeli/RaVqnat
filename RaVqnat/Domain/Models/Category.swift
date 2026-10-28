@@ -36,7 +36,7 @@ enum ActivityCategory: String, CaseIterable, Codable, Hashable, Sendable, Identi
     /// Secondary symbols used to compose procedural cover art.
     var decorativeSymbols: [String] {
         switch self {
-        case .music: ["guitars.fill", "music.mic", "pianokeys", "music.quarternote.3", "headphones"]
+        case .music: ["music.note.list", "music.mic", "pianokeys", "music.quarternote.3", "headphones"]
         case .sports: ["basketball.fill", "soccerball", "tennis.racket", "figure.run", "volleyball.fill"]
         case .learning: ["character.book.closed.fill", "graduationcap.fill", "text.bubble.fill", "lightbulb.fill", "globe.europe.africa.fill"]
         case .technology: ["chevron.left.forwardslash.chevron.right", "cpu.fill", "iphone", "keyboard.fill", "network"]

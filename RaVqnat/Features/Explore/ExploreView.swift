@@ -75,28 +75,32 @@ struct ExploreView: View {
                     } label: { Label("explore.near_me", systemImage: "location.fill") }
                     Button { showNeighborhoodPicker = true } label: { Label("explore.choose_neighborhood", systemImage: "map") }
                 } label: {
-                    HStack(spacing: 4) {
-                        Image(systemName: model.usesDeviceLocation ? "location.fill" : "mappin")
+                    HStack(spacing: 6) {
+                        Image(systemName: model.usesDeviceLocation ? "location.fill" : "mappin").font(.caption.weight(.bold))
                         Text(model.usesDeviceLocation ? String(localized: "explore.near_you") : (Neighborhood.find(model.originNeighborhoodID)?.name ?? String(localized: "explore.all_tbilisi")))
-                        Image(systemName: "chevron.down").font(.caption.weight(.bold))
+                        Image(systemName: "chevron.down").font(.caption2.weight(.bold))
                     }
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(Theme.Palette.brand)
+                    .rvLabelStyle()
+                    .foregroundStyle(Theme.Palette.ink)
+                    .padding(.horizontal, Theme.Spacing.m)
+                    .frame(minHeight: 36)
+                    .overlay(RoundedRectangle(cornerRadius: Theme.Radius.small).strokeBorder(Theme.Palette.ink, lineWidth: Theme.Stroke.hairline))
                 }
                 .accessibilityIdentifier("explore.location")
                 Spacer()
                 Button { showFilters = true } label: {
-                    Image(systemName: "line.3.horizontal.decrease")
+                    Image(systemName: "slider.horizontal.3")
                         .font(.headline)
                         .frame(width: 44, height: 44)
-                        .background(Theme.Palette.surface, in: Circle())
+                        .background(Theme.Palette.surface, in: RoundedRectangle(cornerRadius: Theme.Radius.small))
+                        .overlay(RoundedRectangle(cornerRadius: Theme.Radius.small).strokeBorder(Theme.Palette.ink, lineWidth: Theme.Stroke.regular))
                         .overlay(alignment: .topTrailing) {
                             if model.query.activeFilterCount > 0 {
                                 Text("\(model.query.activeFilterCount)")
-                                    .font(.caption2.bold()).foregroundStyle(Theme.Palette.onBrand)
+                                    .font(.caption2.monospaced().bold()).foregroundStyle(.white)
                                     .frame(minWidth: 18, minHeight: 18)
-                                    .background(Theme.Palette.brand, in: Circle())
-                                    .offset(x: 2, y: -2)
+                                    .background(Theme.Palette.accent, in: Rectangle())
+                                    .offset(x: 5, y: -5)
                             }
                         }
                 }
@@ -105,8 +109,9 @@ struct ExploreView: View {
                 .accessibilityValue(Text("explore.filters.active \(model.query.activeFilterCount)"))
             }
             Text(greeting)
-                .font(.rvDisplay)
+                .rvHero(size: 42)
                 .foregroundStyle(Theme.Palette.ink)
+                .padding(.top, Theme.Spacing.m)
                 .accessibilityAddTraits(.isHeader)
         }
         .padding(.horizontal, Theme.Spacing.screen)

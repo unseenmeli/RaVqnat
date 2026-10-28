@@ -7,105 +7,130 @@ struct WelcomeView: View {
     @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
-        VStack(spacing: 0) {
-            Spacer(minLength: Theme.Spacing.xl)
-            WelcomeCollage()
-                .frame(height: 260)
-                .padding(.horizontal, Theme.Spacing.screen)
-            Spacer(minLength: Theme.Spacing.xl)
-
-            VStack(alignment: .leading, spacing: Theme.Spacing.m) {
-                HStack(spacing: Theme.Spacing.s) {
-                    BrandMark(size: 36)
-                    Text(verbatim: "RaVqnat · რავქნათ")
-                        .font(.rvHeadline)
-                        .foregroundStyle(Theme.Palette.inkSecondary)
+        ScrollView {
+            VStack(alignment: .leading, spacing: Theme.Spacing.xl) {
+                HStack {
+                    Text("welcome.kicker").rvLabelStyle(.rvCaption)
+                    Spacer()
+                    Text(verbatim: "რავქნათ").font(.rvCaption)
                 }
-                Text("welcome.title")
-                    .font(.rvDisplay)
-                    .foregroundStyle(Theme.Palette.ink)
-                    .fixedSize(horizontal: false, vertical: true)
+                .foregroundStyle(Theme.Palette.inkSecondary)
+
+                VStack(alignment: .leading, spacing: Theme.Spacing.s) {
+                    EchoText(text: "RaVqnat", size: 68, step: 6)
+                        .minimumScaleFactor(0.6)
+                        .lineLimit(1)
+                    Text("welcome.title")
+                        .font(.rvTitle)
+                        .foregroundStyle(Theme.Palette.ink)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                ExampleList()
+
                 Text("welcome.subtitle")
-                    .font(.body)
-                    .foregroundStyle(Theme.Palette.inkSecondary)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal, Theme.Spacing.screen)
-
-            VStack(spacing: Theme.Spacing.m) {
-                SignInWithAppleButton(.continue) { request in
-                    session.prepareAppleRequest(request)
-                } onCompletion: { result in
-                    Task { await session.handleAppleCompletion(result) }
-                }
-                .signInWithAppleButtonStyle(colorScheme == .dark ? .white : .black)
-                .frame(height: 52)
-                .clipShape(Capsule())
-                .disabled(session.isWorking)
-
-                if env.auth.supportsDemoSignIn {
-                    Button {
-                        Task { await session.signInAsDemoUser() }
-                    } label: {
-                        Label("welcome.demo", systemImage: "hammer.fill")
-                    }
-                    .buttonStyle(.secondary)
-                    .disabled(session.isWorking)
-                    .accessibilityIdentifier("welcome.demo")
-                    Text("welcome.demo.note")
-                        .font(.caption)
-                        .foregroundStyle(Theme.Palette.inkTertiary)
-                        .multilineTextAlignment(.center)
-                }
-
-                Text("welcome.legal")
-                    .font(.caption)
-                    .foregroundStyle(Theme.Palette.inkTertiary)
-                    .multilineTextAlignment(.center)
+                    .font(.system(.subheadline, design: .monospaced))
+                    .foregroundStyle(Theme.Palette.ink)
+                    .lineSpacing(3)
+                    .padding(Theme.Spacing.l)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(Theme.Palette.surface)
+                    .overlay(Rectangle().strokeBorder(Theme.Palette.ink, lineWidth: Theme.Stroke.bold))
             }
             .padding(.horizontal, Theme.Spacing.screen)
-            .padding(.top, Theme.Spacing.xl)
-            .padding(.bottom, Theme.Spacing.l)
+            .padding(.top, Theme.Spacing.l)
+            .padding(.bottom, Theme.Spacing.xl)
         }
+        .scrollBounceBehavior(.basedOnSize)
+        .safeAreaInset(edge: .bottom) { actions }
         .overlay { if session.isWorking { ProgressView().controlSize(.large) } }
         .screenBackground()
     }
+
+    private var actions: some View {
+        VStack(spacing: Theme.Spacing.m) {
+            SignInWithAppleButton(.continue) { request in
+                session.prepareAppleRequest(request)
+            } onCompletion: { result in
+                Task { await session.handleAppleCompletion(result) }
+            }
+            .signInWithAppleButtonStyle(colorScheme == .dark ? .white : .black)
+            .frame(height: 54)
+            .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.control))
+            .disabled(session.isWorking)
+
+            if env.auth.supportsDemoSignIn {
+                Button {
+                    Task { await session.signInAsDemoUser() }
+                } label: {
+                    Text("welcome.demo")
+                }
+                .buttonStyle(.secondary)
+                .disabled(session.isWorking)
+                .accessibilityIdentifier("welcome.demo")
+                Text("welcome.demo.note")
+                    .font(.caption2)
+                    .foregroundStyle(Theme.Palette.inkTertiary)
+                    .multilineTextAlignment(.center)
+            }
+
+            Text("welcome.legal")
+                .font(.caption2)
+                .foregroundStyle(Theme.Palette.inkTertiary)
+                .multilineTextAlignment(.center)
+        }
+        .padding(.horizontal, Theme.Spacing.screen)
+        .padding(.top, Theme.Spacing.m)
+        .padding(.bottom, Theme.Spacing.s)
+        .background(Theme.Palette.canvas.opacity(0.94).ignoresSafeArea())
+    }
 }
 
-/// Playful arrangement of category tiles that previews what the app is about.
-private struct WelcomeCollage: View {
+/// Numbered list of example plans; the highlighted row cycles, like a departures board.
+/// Static under Reduce Motion.
+private struct ExampleList: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var appeared = false
+    @State private var highlighted = 0
 
-    private let tiles: [(ActivityCategory, CGFloat, CGFloat, Double, CGFloat)] = [
-        (.music, -0.28, -0.22, -8, 112), (.sports, 0.22, -0.30, 6, 96), (.food, 0.30, 0.18, -5, 120),
-        (.games, -0.24, 0.26, 7, 100), (.outdoors, 0.0, 0.0, 0, 132),
+    private let examples: [(LocalizedStringKey, String)] = [
+        ("welcome.example.guitar", "music.quarternote.3"),
+        ("welcome.example.basketball", "basketball.fill"),
+        ("welcome.example.coffee", "cup.and.saucer.fill"),
+        ("welcome.example.chess", "checkerboard.rectangle"),
     ]
 
     var body: some View {
-        GeometryReader { proxy in
-            ZStack {
-                ForEach(Array(tiles.enumerated()), id: \.offset) { index, tile in
-                    let (category, x, y, angle, size) = tile
-                    RoundedRectangle(cornerRadius: 28, style: .continuous)
-                        .fill(category.softTint)
-                        .overlay {
-                            Image(systemName: category.symbol)
-                                .font(.system(size: size * 0.38, weight: .bold))
-                                .foregroundStyle(category.tint)
-                        }
-                        .frame(width: size, height: size)
-                        .shadow(color: .black.opacity(0.08), radius: 14, y: 8)
-                        .rotationEffect(.degrees(angle))
-                        .offset(x: x * proxy.size.width, y: y * proxy.size.height)
-                        .scaleEffect(appeared || reduceMotion ? 1 : 0.6)
-                        .opacity(appeared || reduceMotion ? 1 : 0)
-                        .animation(reduceMotion ? nil : .spring(duration: 0.6, bounce: 0.35).delay(Double(index) * 0.06), value: appeared)
+        VStack(spacing: 0) {
+            ForEach(Array(examples.enumerated()), id: \.offset) { index, example in
+                let isOn = index == highlighted
+                HStack(spacing: Theme.Spacing.m) {
+                    Text(verbatim: String(format: "%02d", index + 1))
+                        .font(.rvCaption)
+                    Text(example.0)
+                        .font(.system(.title3, design: .serif))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+                    Spacer()
+                    Image(systemName: example.1).font(.body.weight(.semibold))
+                }
+                .foregroundStyle(isOn ? Theme.Palette.canvas : Theme.Palette.ink)
+                .padding(.horizontal, Theme.Spacing.m)
+                .padding(.vertical, Theme.Spacing.m)
+                .background(isOn ? Theme.Palette.ink : Color.clear)
+                if index < examples.count - 1 {
+                    Rectangle().fill(Theme.Palette.ink).frame(height: Theme.Stroke.hairline)
                 }
             }
-            .frame(width: proxy.size.width, height: proxy.size.height)
         }
-        .onAppear { appeared = true }
-        .accessibilityHidden(true)
+        .overlay(Rectangle().strokeBorder(Theme.Palette.ink, lineWidth: Theme.Stroke.bold))
+        .animation(reduceMotion ? nil : .easeInOut(duration: 0.25), value: highlighted)
+        .task {
+            guard !reduceMotion else { return }
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(1.6))
+                highlighted = (highlighted + 1) % examples.count
+            }
+        }
+        .accessibilityElement(children: .combine)
     }
 }

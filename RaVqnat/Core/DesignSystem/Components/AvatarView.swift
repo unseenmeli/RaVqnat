@@ -7,10 +7,10 @@ struct AvatarView: View {
 
     var body: some View {
         ZStack {
-            Circle().fill(fallbackColor.opacity(0.18))
+            Circle().fill(Theme.Palette.surfaceMuted)
             Text(initials)
-                .font(.system(size: size * 0.4, weight: .semibold, design: .rounded))
-                .foregroundStyle(fallbackColor)
+                .font(.system(size: size * 0.38, weight: .regular, design: .serif))
+                .foregroundStyle(Theme.Palette.ink)
             if let url {
                 AsyncImage(url: url) { phase in
                     if let image = phase.image {
@@ -21,6 +21,7 @@ struct AvatarView: View {
         }
         .frame(width: size, height: size)
         .clipShape(Circle())
+        .overlay(Circle().strokeBorder(Theme.Palette.ink, lineWidth: size > 60 ? Theme.Stroke.bold : Theme.Stroke.hairline))
         .accessibilityHidden(true)
     }
 
@@ -28,12 +29,6 @@ struct AvatarView: View {
         let parts = name.split(separator: " ").prefix(2)
         let letters = parts.compactMap(\.first).map(String.init).joined()
         return letters.isEmpty ? "·" : letters.uppercased()
-    }
-
-    private var fallbackColor: Color {
-        let palette = ActivityCategory.allCases.map(\.tint)
-        let hash = name.unicodeScalars.reduce(0) { ($0 &* 31 &+ Int($1.value)) & 0xFFFF }
-        return palette[hash % palette.count]
     }
 }
 
@@ -43,7 +38,8 @@ struct VerifiedBadge: View {
     var body: some View {
         Image(systemName: "checkmark.seal.fill")
             .font(size)
-            .foregroundStyle(Theme.Palette.trust)
+            .foregroundStyle(Theme.Palette.canvas, Theme.Palette.ink)
+            .symbolRenderingMode(.palette)
             .accessibilityLabel(Text("verification.badge.accessibility"))
     }
 }

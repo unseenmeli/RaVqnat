@@ -21,7 +21,7 @@ struct RaVqnatApp: App {
                 .environment(env)
                 .environment(session)
                 .environment(router)
-                .tint(Theme.Palette.brand)
+                .tint(Theme.Palette.ink)
                 .onAppear(perform: wireDelegate)
                 .onOpenURL { url in
                     if let link = DeepLink(url: url) { router.handle(link, isReady: session.phase == .ready) }

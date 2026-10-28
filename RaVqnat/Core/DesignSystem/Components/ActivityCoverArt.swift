@@ -1,7 +1,8 @@
 import SwiftUI
 
-/// Deterministic, category-tinted cover illustration composed from SF Symbols.
-/// Used when an activity has no uploaded photo, so the feed stays beautiful without stock imagery.
+/// Deterministic cover illustration for activities without a photo: a manga-style screentone
+/// field on paper with the category symbol and its pink afterimages. The same activity always
+/// gets the same composition.
 struct ActivityCoverArt: View {
     let category: ActivityCategory
     let seed: UUID
@@ -9,38 +10,22 @@ struct ActivityCoverArt: View {
 
     var body: some View {
         ZStack {
-            category.softTint
+            Theme.Palette.surface
+            Halftone(pattern: category.pattern, seed: seed)
             GeometryReader { proxy in
-                let size = proxy.size
-                let symbols = category.decorativeSymbols
                 let rng = SeededRandom(seed: seed)
-                ZStack {
-                    Circle()
-                        .fill(category.tint.opacity(0.14))
-                        .frame(width: size.height * 1.3)
-                        .position(x: size.width * rng.value(0, 0.25, 0.85), y: size.height * rng.value(1, 0.1, 0.5))
-                    RoundedRectangle(cornerRadius: 40, style: .continuous)
-                        .fill(category.tint.opacity(0.10))
-                        .frame(width: size.height * 0.9, height: size.height * 0.9)
-                        .rotationEffect(.degrees(rng.value(2, -25, 25)))
-                        .position(x: size.width * rng.value(3, 0.1, 0.4), y: size.height * rng.value(4, 0.6, 1.0))
-                    ForEach(0..<4, id: \.self) { index in
-                        Image(systemName: symbols[(index + Int(rng.value(5, 0, 5))) % symbols.count])
-                            .font(.system(size: size.height * rng.value(10 + index, 0.16, 0.26), weight: .semibold))
-                            .foregroundStyle(category.tint.opacity(0.35))
-                            .rotationEffect(.degrees(rng.value(20 + index, -18, 18)))
-                            .position(x: size.width * (0.18 + Double(index) * 0.22) + rng.value(30 + index, -14, 14),
-                                      y: size.height * rng.value(40 + index, 0.22, 0.78))
-                    }
-                    Image(systemName: category.symbol)
-                        .font(.system(size: size.height * 0.42, weight: .bold))
-                        .foregroundStyle(category.tint)
-                        .position(x: size.width * 0.72, y: size.height * 0.52)
-                }
+                let symbolSize = proxy.size.height * 0.46
+                EchoSymbol(symbol: category.symbol, size: symbolSize, spacing: symbolSize * 0.14)
+                    .position(x: proxy.size.width * rng.value(0, 0.58, 0.74), y: proxy.size.height * 0.54)
+                Image(systemName: category.decorativeSymbols[Int(rng.value(1, 0, 4.99))])
+                    .font(.system(size: proxy.size.height * 0.16, weight: .semibold))
+                    .foregroundStyle(Theme.Palette.ink.opacity(0.85))
+                    .rotationEffect(.degrees(rng.value(2, -14, 14)))
+                    .position(x: proxy.size.width * rng.value(3, 0.14, 0.3), y: proxy.size.height * rng.value(4, 0.62, 0.78))
             }
             if let imageURL {
                 AsyncImage(url: imageURL) { phase in
-                    if let image = phase.image { image.resizable().scaledToFill() }
+                    if let image = phase.image { image.resizable().scaledToFill().grayscale(0.15) }
                 }
             }
         }
@@ -49,8 +34,58 @@ struct ActivityCoverArt: View {
     }
 }
 
+/// Screentone fills drawn with `Canvas`.
+private struct Halftone: View {
+    let pattern: HalftonePattern
+    let seed: UUID
+
+    var body: some View {
+        Canvas { context, size in
+            let ink = GraphicsContext.Shading.color(Theme.Palette.ink.opacity(0.22))
+            let rng = SeededRandom(seed: seed)
+            let spacing: CGFloat = 9
+            switch pattern {
+            case .dots, .gradientDots:
+                // Dot radius fades across the frame, like a printed tone gradient.
+                let angle = rng.value(6, 0, .pi * 2)
+                var y: CGFloat = 0
+                var row = 0
+                while y < size.height + spacing {
+                    var x: CGFloat = row.isMultiple(of: 2) ? 0 : spacing / 2
+                    while x < size.width + spacing {
+                        let t = ((x / size.width) * cos(angle) + (y / size.height) * sin(angle) + 1) / 2
+                        let r = pattern == .dots ? 1.6 * t + 0.3 : 2.6 * t * t + 0.2
+                        context.fill(Path(ellipseIn: CGRect(x: x - r, y: y - r, width: r * 2, height: r * 2)), with: ink)
+                        x += spacing
+                    }
+                    y += spacing * 0.866
+                    row += 1
+                }
+            case .diagonal:
+                var path = Path()
+                var x: CGFloat = -size.height
+                while x < size.width {
+                    path.move(to: CGPoint(x: x, y: size.height))
+                    path.addLine(to: CGPoint(x: x + size.height, y: 0))
+                    x += 7
+                }
+                context.stroke(path, with: ink, lineWidth: 1)
+            case .grid:
+                var path = Path()
+                var x: CGFloat = 0
+                while x < size.width { path.move(to: CGPoint(x: x, y: 0)); path.addLine(to: CGPoint(x: x, y: size.height)); x += 14 }
+                var y: CGFloat = 0
+                while y < size.height { path.move(to: CGPoint(x: 0, y: y)); path.addLine(to: CGPoint(x: size.width, y: y)); y += 14 }
+                context.stroke(path, with: ink, lineWidth: 0.75)
+            }
+        }
+        .mask(LinearGradient(colors: [.black, .black.opacity(0.15)], startPoint: .leading, endPoint: .trailing))
+        .drawingGroup()
+    }
+}
+
 /// Tiny deterministic hash-based generator so the same activity always gets the same art.
-private struct SeededRandom {
+struct SeededRandom {
     let bytes: [UInt8]
     init(seed: UUID) {
         let u = seed.uuid

@@ -1,26 +1,39 @@
 import SwiftUI
 
-/// RaVqnat design tokens.
+/// RaVqnat design tokens — "ink on paper with a pink echo".
 ///
-/// Palette: "Pomegranate" (ბროწეული) brand red on a warm "lavash" canvas, ink-plum text and a
-/// Mtkvari-teal trust colour. Each token has a light and a dark value tuned for WCAG AA contrast.
+/// Ink-black type and hairline-to-medium ink borders on warm dot-grid paper, an editorial serif
+/// for display type, a monospaced face for small labels, and hot pink used sparingly as an
+/// "afterimage" (offset echoes behind shapes, selection, the active tab). Every token has a light
+/// and a dark value; text/background pairs meet WCAG AA.
 enum Theme {
     enum Palette {
-        static let brand = Color(light: 0xD63B2F, dark: 0xFF6F5E)
-        static let onBrand = Color(light: 0xFFFFFF, dark: 0x2A0D09)
-        static let brandSoft = Color(light: 0xFCE6E1, dark: 0x3A1C19)
-        static let canvas = Color(light: 0xFAF6F1, dark: 0x0F0E12)
-        static let surface = Color(light: 0xFFFFFF, dark: 0x1B1A20)
-        static let surfaceMuted = Color(light: 0xF2ECE4, dark: 0x26242C)
-        static let ink = Color(light: 0x1C1A24, dark: 0xF5F1EA)
-        static let inkSecondary = Color(light: 0x5E5A66, dark: 0xABA6B3)
-        static let inkTertiary = Color(light: 0x8C8794, dark: 0x7D7886)
-        static let hairline = Color(light: 0xE6DED4, dark: 0x34313A)
-        static let trust = Color(light: 0x0E7C7B, dark: 0x4CC9C4)
-        static let trustSoft = Color(light: 0xDDF1F0, dark: 0x163433)
-        static let success = Color(light: 0x2E7D4F, dark: 0x5ACB8A)
-        static let warning = Color(light: 0xA45F00, dark: 0xF2B04D)
-        static let warningSoft = Color(light: 0xFBEFD9, dark: 0x3A2C14)
+        // Paper & ink
+        static let canvas = Color(light: 0xF5F4F0, dark: 0x121110)
+        static let surface = Color(light: 0xFFFFFF, dark: 0x1B1A18)
+        static let surfaceMuted = Color(light: 0xEBE9E3, dark: 0x262422)
+        static let ink = Color(light: 0x111111, dark: 0xF3F1EC)
+        static let inkSecondary = Color(light: 0x55524D, dark: 0xADA9A2)
+        static let inkTertiary = Color(light: 0x85817A, dark: 0x7E7A74)
+        static let hairline = Color(light: 0xD9D6CE, dark: 0x3A3734)
+        static let dot = Color(light: 0x3C3C43, dark: 0xF3F1EC).opacity(0.13)
+
+        // The pink echo. `accent` is for fills and afterimages; `accentText` passes AA as text on paper.
+        static let accent = Color(light: 0xFF2E9A, dark: 0xFF4FAE)
+        static let accentText = Color(light: 0xC2126C, dark: 0xFF7AC0)
+        static let accentSoft = Color(light: 0xFFE3F1, dark: 0x3A1528)
+
+        // Primary actions are ink with paper text (inverted in dark mode).
+        static let brand = ink
+        static let onBrand = canvas
+        static let brandSoft = surfaceMuted
+
+        // Semantic
+        static let trust = ink
+        static let trustSoft = surfaceMuted
+        static let success = Color(light: 0x1F7A4D, dark: 0x5BC88C)
+        static let warning = Color(light: 0x8F5600, dark: 0xF2B04D)
+        static let warningSoft = Color(light: 0xF8ECD6, dark: 0x3A2C14)
         static let danger = Color(light: 0xC0262D, dark: 0xFF6B70)
     }
 
@@ -36,42 +49,40 @@ enum Theme {
     }
 
     enum Radius {
-        static let card: CGFloat = 24
-        static let control: CGFloat = 16
-        static let small: CGFloat = 10
+        /// Near-square corners: editorial, not bubbly.
+        static let card: CGFloat = 6
+        static let control: CGFloat = 4
+        static let small: CGFloat = 3
     }
+
+    enum Stroke {
+        static let hairline: CGFloat = 1
+        static let regular: CGFloat = 1.5
+        static let bold: CGFloat = 2
+    }
+
+    /// Offset of the hard "afterimage" shadow behind cards and primary buttons.
+    static let echoOffset: CGFloat = 4
 }
 
 extension ActivityCategory {
-    /// Category tint used for chips, map pins and cover art.
-    var tint: Color {
-        switch self {
-        case .music: Color(light: 0x7B4FCF, dark: 0xB08CF5)
-        case .sports: Color(light: 0x1F7A4C, dark: 0x5FCB8E)
-        case .learning: Color(light: 0x2D62C8, dark: 0x7FA8F5)
-        case .technology: Color(light: 0x3B4A6B, dark: 0x9AA9CC)
-        case .food: Color(light: 0xC2621A, dark: 0xF2A061)
-        case .arts: Color(light: 0xC23B72, dark: 0xF07FAE)
-        case .outdoors: Color(light: 0x3E7D2E, dark: 0x8BCB72)
-        case .games: Color(light: 0x9A7300, dark: 0xE7C24F)
-        case .other: Color(light: 0x6A6475, dark: 0xB3ADBD)
-        }
-    }
+    /// Categories are differentiated by symbol and screentone pattern, not by colour.
+    var tint: Color { Theme.Palette.ink }
+    var softTint: Color { Theme.Palette.surfaceMuted }
 
-    var softTint: Color {
+    /// Screentone used in cover art.
+    var pattern: HalftonePattern {
         switch self {
-        case .music: Color(light: 0xEFE7FB, dark: 0x2A2238)
-        case .sports: Color(light: 0xE1F2E8, dark: 0x17291F)
-        case .learning: Color(light: 0xE3ECFB, dark: 0x18233A)
-        case .technology: Color(light: 0xE5E9F1, dark: 0x1F2430)
-        case .food: Color(light: 0xFCEBDD, dark: 0x352316)
-        case .arts: Color(light: 0xFBE4EE, dark: 0x351A26)
-        case .outdoors: Color(light: 0xE6F1DF, dark: 0x1D2A18)
-        case .games: Color(light: 0xF8F0D3, dark: 0x312912)
-        case .other: Color(light: 0xEDEBF0, dark: 0x25232A)
+        case .music, .arts: .dots
+        case .sports, .outdoors: .diagonal
+        case .learning, .technology: .grid
+        case .food, .games: .gradientDots
+        case .other: .dots
         }
     }
 }
+
+enum HalftonePattern { case dots, gradientDots, diagonal, grid }
 
 extension Color {
     /// A colour that resolves differently in light and dark appearance.
@@ -92,10 +103,48 @@ extension UIColor {
 }
 
 extension Font {
-    /// Rounded display face for headings; body text stays SF Pro for legibility.
-    static let rvDisplay = Font.system(.largeTitle, design: .rounded).weight(.bold)
-    static let rvTitle = Font.system(.title2, design: .rounded).weight(.bold)
-    static let rvTitle3 = Font.system(.title3, design: .rounded).weight(.semibold)
-    static let rvHeadline = Font.system(.headline, design: .rounded)
-    static let rvCaption = Font.system(.caption, design: .rounded).weight(.medium)
+    /// Editorial serif (New York) for headings; SF Pro stays the reading face.
+    static let rvDisplay = Font.system(.largeTitle, design: .serif)
+    static let rvTitle = Font.system(.title, design: .serif)
+    static let rvTitle3 = Font.system(.title3, design: .serif).weight(.medium)
+    static let rvHeadline = Font.system(.title3, design: .serif).weight(.medium)
+    /// Monospaced small labels (metadata, tags, buttons).
+    static let rvCaption = Font.system(.caption, design: .monospaced).weight(.medium)
+    static let rvLabel = Font.system(.footnote, design: .monospaced).weight(.semibold)
+    static let rvButton = Font.system(.subheadline, design: .monospaced).weight(.bold)
+}
+
+enum Typography {
+    /// Georgian has no letter case in everyday script; uppercasing Mkhedruli produces Mtavruli,
+    /// which is harder to read, so labels are only uppercased for Latin-script UI languages.
+    static var usesUppercaseLabels: Bool {
+        (Bundle.main.preferredLocalizations.first ?? "en") != "ka"
+    }
+}
+
+extension View {
+    /// Small monospaced label style ("TODAY, 19:00", "3 SPOTS").
+    func rvLabelStyle(_ font: Font = .rvLabel) -> some View {
+        self.font(font)
+            .textCase(Typography.usesUppercaseLabels ? .uppercase : nil)
+            .tracking(Typography.usesUppercaseLabels ? 0.6 : 0)
+    }
+
+    /// Large serif headline that scales with Dynamic Type.
+    func rvHero(size: CGFloat = 52) -> some View {
+        modifier(HeroFont(size: size))
+    }
+}
+
+private struct HeroFont: ViewModifier {
+    @ScaledMetric(relativeTo: .largeTitle) private var scaled: CGFloat = 52
+    init(size: CGFloat) { _scaled = ScaledMetric(wrappedValue: size, relativeTo: .largeTitle) }
+
+    func body(content: Content) -> some View {
+        content
+            .font(.system(size: scaled, weight: .regular, design: .serif))
+            .tracking(-0.8)
+            .lineSpacing(-4)
+            .textCase(Typography.usesUppercaseLabels ? .uppercase : nil)
+    }
 }

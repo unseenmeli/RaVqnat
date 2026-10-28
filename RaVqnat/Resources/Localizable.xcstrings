@@ -7516,13 +7516,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Explore the demo"
+            "value": "Shall we? Try the demo"
           }
         },
         "ka": {
           "stringUnit": {
             "state": "translated",
-            "value": "დემოს დათვალიერება"
+            "value": "აბა? დემოს ნახვა"
           }
         }
       }
@@ -7539,6 +7539,86 @@
           "stringUnit": {
             "state": "translated",
             "value": "დემო რეჟიმში გამოყენებულია გამოგონილი ადამიანები და აქტივობები, რომლებიც მხოლოდ ამ მოწყობილობაზე ინახება."
+          }
+        }
+      }
+    },
+    "welcome.example.basketball": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pick-up basketball"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ქუჩის კალათბურთი"
+          }
+        }
+      }
+    },
+    "welcome.example.chess": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chess for beginners"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ჭადრაკი დამწყებთათვის"
+          }
+        }
+      }
+    },
+    "welcome.example.coffee": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Coffee & startup ideas"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ყავა და სტარტაპ იდეები"
+          }
+        }
+      }
+    },
+    "welcome.example.guitar": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Learn guitar together"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "გიტარის ერთად სწავლა"
+          }
+        }
+      }
+    },
+    "welcome.kicker": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tbilisi · 18+"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "თბილისი · 18+"
           }
         }
       }

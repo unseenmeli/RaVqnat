@@ -37,6 +37,7 @@ struct MainTabView: View {
             .tabItem { Label("tab.profile", systemImage: "person.crop.circle") }
             .tag(AppTab.profile)
         }
+        .tint(Theme.Palette.accentText)
         .overlay(alignment: .top) {
             if !env.network.isOnline {
                 OfflineBanner().padding(.top, 4).transition(.move(edge: .top).combined(with: .opacity))
@@ -48,7 +49,8 @@ struct MainTabView: View {
 
 extension View {
     func withAppRoutes() -> some View {
-        navigationDestination(for: Route.self) { route in
+        tint(Theme.Palette.ink)
+            .navigationDestination(for: Route.self) { route in
             switch route {
             case .activity(let id): ActivityDetailView(activityID: id)
             case .chat(let id): ChatThreadView(activityID: id)

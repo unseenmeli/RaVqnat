@@ -1,5 +1,6 @@
 import SwiftUI
 
+/// Bordered tag that inverts to solid ink when selected.
 struct FilterChip: View {
     let title: String
     var symbol: String?
@@ -9,17 +10,24 @@ struct FilterChip: View {
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: Theme.Spacing.xs) {
-                if let symbol { Image(systemName: symbol).imageScale(.small) }
+            HStack(spacing: 6) {
+                if let symbol { Image(systemName: symbol).font(.caption.weight(.semibold)) }
                 Text(title).lineLimit(1)
             }
-            .font(.subheadline.weight(.semibold))
-            .padding(.horizontal, Theme.Spacing.m + 2)
+            .rvLabelStyle(.rvCaption.weight(.semibold))
+            .padding(.horizontal, Theme.Spacing.m)
             .frame(minHeight: 36)
             .foregroundStyle(isSelected ? Theme.Palette.canvas : Theme.Palette.ink)
-            .background(isSelected ? AnyShapeStyle(tint) : AnyShapeStyle(Theme.Palette.surface), in: Capsule())
-            .overlay(Capsule().strokeBorder(isSelected ? .clear : Theme.Palette.hairline, lineWidth: 1))
-            .contentShape(Capsule())
+            .background(isSelected ? Theme.Palette.ink : Theme.Palette.surface, in: RoundedRectangle(cornerRadius: Theme.Radius.small))
+            .overlay(RoundedRectangle(cornerRadius: Theme.Radius.small)
+                .strokeBorder(Theme.Palette.ink.opacity(isSelected ? 1 : 0.85), lineWidth: Theme.Stroke.hairline))
+            .background {
+                if isSelected {
+                    RoundedRectangle(cornerRadius: Theme.Radius.small).fill(Theme.Palette.accent).offset(x: 3, y: 3)
+                }
+            }
+            .padding(.trailing, 3).padding(.bottom, 3)
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .accessibilityAddTraits(isSelected ? .isSelected : [])
@@ -32,33 +40,37 @@ struct CategoryTag: View {
     var onDark = false
 
     var body: some View {
-        Label(category.title, systemImage: category.symbol)
-            .font(.rvCaption)
-            .labelStyle(.titleAndIcon)
-            .padding(.horizontal, Theme.Spacing.s + 2)
-            .padding(.vertical, Theme.Spacing.xs + 1)
-            .foregroundStyle(onDark ? Color.white : category.tint)
-            .background(onDark ? AnyShapeStyle(.black.opacity(0.35)) : AnyShapeStyle(category.softTint), in: Capsule())
+        HStack(spacing: 5) {
+            Image(systemName: category.symbol).font(.caption2.weight(.bold))
+            Text(category.title)
+        }
+        .rvLabelStyle(.rvCaption.weight(.bold))
+        .padding(.horizontal, Theme.Spacing.s)
+        .padding(.vertical, 5)
+        .foregroundStyle(Theme.Palette.ink)
+        .background(Theme.Palette.surface, in: RoundedRectangle(cornerRadius: Theme.Radius.small))
+        .overlay(RoundedRectangle(cornerRadius: Theme.Radius.small).strokeBorder(Theme.Palette.ink, lineWidth: Theme.Stroke.hairline))
     }
 }
 
-/// Small status capsule, e.g. "3 spots left", "Requested".
+/// Small monospaced status tag, e.g. "3 SPOTS LEFT", "REQUESTED".
 struct StatusPill: View {
     let text: String
     var symbol: String?
     var tint: Color = Theme.Palette.ink
     var background: Color = Theme.Palette.surfaceMuted
+    var inverted = false
 
     var body: some View {
         HStack(spacing: 4) {
-            if let symbol { Image(systemName: symbol).imageScale(.small) }
+            if let symbol { Image(systemName: symbol).font(.caption2.weight(.bold)) }
             Text(text)
         }
-        .font(.rvCaption)
-        .padding(.horizontal, Theme.Spacing.s + 2)
-        .padding(.vertical, Theme.Spacing.xs + 1)
-        .foregroundStyle(tint)
-        .background(background, in: Capsule())
+        .rvLabelStyle(.rvCaption.weight(.semibold))
+        .padding(.horizontal, Theme.Spacing.s)
+        .padding(.vertical, 5)
+        .foregroundStyle(inverted ? Theme.Palette.canvas : tint)
+        .background(inverted ? Theme.Palette.ink : background, in: RoundedRectangle(cornerRadius: Theme.Radius.small))
     }
 }
 

@@ -67,7 +67,12 @@ STRINGS = {
     # Welcome
     "welcome.title": ("What shall we do today?", "რავქნათ დღეს?"),
     "welcome.subtitle": ("Find people nearby for music, sport, coffee and more — and meet in real life.", "იპოვე ახლომახლო ხალხი მუსიკისთვის, სპორტისთვის, ყავისთვის და სხვა რამისთვის — და შეხვდით რეალურად."),
-    "welcome.demo": ("Explore the demo", "დემოს დათვალიერება"),
+    "welcome.kicker": ("Tbilisi · 18+", "თბილისი · 18+"),
+    "welcome.example.guitar": ("Learn guitar together", "გიტარის ერთად სწავლა"),
+    "welcome.example.basketball": ("Pick-up basketball", "ქუჩის კალათბურთი"),
+    "welcome.example.coffee": ("Coffee & startup ideas", "ყავა და სტარტაპ იდეები"),
+    "welcome.example.chess": ("Chess for beginners", "ჭადრაკი დამწყებთათვის"),
+    "welcome.demo": ("Shall we? Try the demo", "აბა? დემოს ნახვა"),
     "welcome.demo.note": ("Demo mode uses fictional people and activities stored only on this device.", "დემო რეჟიმში გამოყენებულია გამოგონილი ადამიანები და აქტივობები, რომლებიც მხოლოდ ამ მოწყობილობაზე ინახება."),
     "welcome.legal": ("RaVqnat is for adults 18+. By continuing you agree to our Terms and Community Guidelines.", "RaVqnat განკუთვნილია 18+ ასაკის ადამიანებისთვის. გაგრძელებით ეთანხმები წესებს და საზოგადოების პრინციპებს."),
 
