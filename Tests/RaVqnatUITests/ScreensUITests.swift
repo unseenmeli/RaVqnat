@@ -55,9 +55,23 @@ final class ScreensUITests: XCTestCase {
         app.buttons["tab.map"].press(forDuration: 0.5, thenDragTo: app.buttons["tab.profile"])
         XCTAssertTrue(app.buttons["profile.edit"].waitForExistence(timeout: 3), "Dragging to the end lands on Profile")
 
-        // Dragging from a tab you are NOT on does nothing; tapping still works.
+        // A drag can start from any tab, not only the current one: on Profile, grab Home and
+        // slide to Messages.
+        // While scrubbing all four items share equal widths, so aim at the third slot of the capsule.
+        let first = app.buttons["tab.explore"].frame, last = app.buttons["tab.profile"].frame
+        let slot = (last.maxX - first.minX) / 4
+        let origin = app.coordinate(withNormalizedOffset: .zero)
+        let start = origin.withOffset(CGVector(dx: first.midX, dy: first.midY))
+        let messagesSlot = origin.withOffset(CGVector(dx: first.minX + slot * 2.5, dy: first.midY))
+        start.press(forDuration: 0.5, thenDragTo: messagesSlot)
+        XCTAssertTrue(app.buttons["tab.chats"].waitForExistence(timeout: 2))
+        XCTAssertTrue(app.buttons["tab.chats"].isSelected, "Dragging from Home while on Profile lands on Messages")
+        snapshot(app, "18-tabbar-messages")
+
+        // Taps still work.
         app.buttons["tab.map"].tap()
         XCTAssertTrue(app.buttons["tab.map"].isSelected)
+        snapshot(app, "19-tabbar-map")
         app.buttons["tab.host"].tap()
         XCTAssertTrue(app.buttons["tab.host"].isSelected, "The separate + button opens hosting")
     }

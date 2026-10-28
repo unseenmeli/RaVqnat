@@ -47,9 +47,10 @@ struct MainTabView: View {
 /// Floating tab bar: Home, Map, Messages and Profile share one capsule; the create ("+") button
 /// sits on its own at the far right.
 ///
-/// The current page shows its icon and name inside a pill. Press and hold the current page,
-/// then drag sideways to scrub: labels tuck away, the pill follows your finger and pages switch
-/// as it crosses each icon (with a selection tick), and it settles with the label on release.
+/// The current page shows its icon and name inside a pill. Press and hold any tab, then drag
+/// sideways to scrub: labels tuck away, the pill jumps under your finger and follows it, pages
+/// switch as it crosses each icon (with a selection tick), and on release the pill flows into
+/// place while the icon glides left and the name types itself in.
 /// Plain taps work as usual, and every item stays an ordinary button for VoiceOver.
 private struct RVTabBar: View {
     @Binding var selection: AppTab
@@ -74,7 +75,7 @@ private struct RVTabBar: View {
     private var isScrubbing: Bool { scrubX != nil }
     /// While scrubbing every item is the same width, so position maps directly to a tab.
     private var equalItemWidth: CGFloat { barWidth > 0 ? (barWidth - inset * 2) / CGFloat(tabs.count) : 0 }
-    private var animation: Animation? { reduceMotion ? nil : .spring(duration: 0.32, bounce: 0.18) }
+    private var animation: Animation? { reduceMotion ? nil : .spring(duration: 0.42, bounce: 0.16) }
 
     var body: some View {
         HStack(spacing: Theme.Spacing.m) {
@@ -94,9 +95,11 @@ private struct RVTabBar: View {
             if isScrubbing, let scrubX, equalItemWidth > 0 {
                 Capsule()
                     .fill(Theme.Palette.surfaceStrong)
+                    .matchedGeometryEffect(id: "pill", in: pillNamespace)
                     .frame(width: equalItemWidth, height: barHeight - inset * 2)
                     .scaleEffect(1.06)
                     .offset(x: min(max(scrubX - inset - equalItemWidth / 2, 0), equalItemWidth * CGFloat(tabs.count - 1)) + inset)
+                    .animation(.interactiveSpring(duration: 0.18), value: scrubX)
             }
             HStack(spacing: 0) {
                 ForEach(tabs, id: \.self) { tab in tabButton(tab) }
@@ -119,9 +122,8 @@ private struct RVTabBar: View {
             .sequenced(before: DragGesture(minimumDistance: 0, coordinateSpace: .named(Self.space)))
             .onChanged { value in
                 guard case .second(true, let drag?) = value else { return }
-                // Only the page you are on can be picked up.
+                // Any tab can be picked up; the pill starts under the finger.
                 if scrubX == nil {
-                    guard itemFrames[selection]?.insetBy(dx: -4, dy: -12).contains(drag.startLocation) == true else { return }
                     ignoreTapsUntil = .distantFuture
                 }
                 scrubX = drag.location.x
@@ -131,7 +133,7 @@ private struct RVTabBar: View {
             }
             .onEnded { _ in
                 if scrubX != nil { ignoreTapsUntil = .now.addingTimeInterval(0.4) }
-                scrubX = nil
+                withAnimation(animation) { scrubX = nil }
             }
     }
 
@@ -142,15 +144,9 @@ private struct RVTabBar: View {
             guard Date.now >= ignoreTapsUntil else { return }
             selection = tab
         } label: {
-            HStack(spacing: 7) {
+            HStack(spacing: showsLabel ? 7 : 0) {
                 icon(for: tab, isSelected: isSelected)
-                if showsLabel {
-                    Text(tab.titleKey)
-                        .font(.subheadline.weight(.semibold))
-                        .lineLimit(1)
-                        .fixedSize()
-                        .transition(.opacity.combined(with: .scale(scale: 0.8, anchor: .leading)))
-                }
+                RevealingLabel(key: tab.titleKey, isRevealed: showsLabel)
             }
             .foregroundStyle(isSelected ? Theme.Palette.ink : Theme.Palette.inkSecondary)
             .padding(.horizontal, showsLabel ? Theme.Spacing.l : 0)
@@ -176,9 +172,20 @@ private struct RVTabBar: View {
     @ViewBuilder private func icon(for tab: AppTab, isSelected: Bool) -> some View {
         switch tab {
         case .explore: TabIcon(asset: "tab-explore", symbol: "square.grid.2x2", isSelected: isSelected, size: 22)
-        case .map: TabIcon(asset: "tab-map", symbol: "mappin.square", isSelected: isSelected, size: 22)
+        case .map:
+            if UIImage(named: "tab-map") != nil {
+                TabIcon(asset: "tab-map", symbol: "map", isSelected: isSelected, size: 22)
+            } else {
+                TabGlyph(kind: .map, isFilled: isSelected)
+            }
         case .chats:
-            TabIcon(asset: "tab-chats", symbol: "text.bubble", isSelected: isSelected, size: 22)
+            Group {
+                if UIImage(named: "tab-chats") != nil {
+                    TabIcon(asset: "tab-chats", symbol: "bubble.left", isSelected: isSelected, size: 22)
+                } else {
+                    TabGlyph(kind: .messages, isFilled: isSelected)
+                }
+            }
                 .overlay(alignment: .topTrailing) {
                     if unreadCount > 0 {
                         Circle().fill(Theme.Palette.accent).frame(width: 9, height: 9)
