@@ -6,6 +6,7 @@ struct ReportTarget: Identifiable, Hashable {
     let userName: String
     var activityID: UUID?
     var messageID: UUID?
+    var storyID: UUID?
 }
 
 /// Private report form. The reported person is never told who reported them.
@@ -22,7 +23,8 @@ struct ReportSheet: View {
     init(target: ReportTarget, onBlockRequested: (() -> Void)? = nil) {
         self.target = target
         self.onBlockRequested = onBlockRequested
-        _draft = State(initialValue: ReportDraft(reportedUserID: target.userID, activityID: target.activityID, messageID: target.messageID))
+        _draft = State(initialValue: ReportDraft(reportedUserID: target.userID, activityID: target.activityID,
+                                                 messageID: target.messageID, storyID: target.storyID))
     }
 
     var body: some View {

@@ -269,6 +269,8 @@ extension MockBackend: AuthRepository {
         state.messages.removeAll { $0.senderID == nil && $0.body.isEmpty }
         state.blocks.removeAll { $0.blockerID == id || $0.blockedID == id }
         state.feedback.removeAll { $0.reviewerID == id }
+        state.stories.removeAll { $0.authorID == id }
+        state.storyViews = state.storyViews.filter { !$0.key.hasSuffix("|\(id)") }
         for index in state.reports.indices {
             if state.reports[index].reporterID == id { state.reports[index].reporterID = nil }
         }
@@ -357,7 +359,6 @@ extension MockBackend: ProfileRepository {
 extension MockBackend: ActivityRepository {
     func nearbyActivities(_ query: ActivityQuery, cursor: Int?, pageSize: Int) async throws -> Page<Activity> {
         let me = try requireUser()
-        let interval = query.date.interval(now: now)
         let rows = state.activities.values
             .filter { row in
                 row.status == .published
@@ -368,7 +369,7 @@ extension MockBackend: ActivityRepository {
                     && (query.neighborhoodID == nil || row.neighborhoodID == query.neighborhoodID)
                     && (!query.onlyWithSpots || approvedCount(row.id) < row.capacity)
                     && (!query.beginnerFriendly || row.skillLevel == .beginner || row.skillLevel == .allLevels)
-                    && (interval.map { $0.contains(row.startsAt) } ?? true)
+                    && query.matchesDate(row.startsAt, now: now)
             }
             .sorted { ($0.startsAt, $0.id.uuidString) < ($1.startsAt, $1.id.uuidString) }
         let offset = cursor ?? 0
@@ -674,6 +675,81 @@ extension MockBackend: ChatRepository {
     }
 }
 
+// MARK: - StoryRepository
+
+extension MockBackend: StoryRepository {
+    private func makeStory(_ row: MockState.StoryRow) -> Story {
+        Story(id: row.id, activityID: row.activityID, author: summary(row.authorID), kind: row.kind, text: row.text,
+              mediaURL: row.mediaURL, background: row.background, createdAt: row.createdAt, expiresAt: row.expiresAt)
+    }
+
+    /// Mirrors the `activity_stories` RLS policy: live stories of visible activities, minus blocked authors.
+    func storyFeed() async throws -> [StoryGroup] {
+        let me = try requireUser()
+        let live = state.stories.filter { story in
+            story.expiresAt > now
+                && !isBlocked(story.authorID ?? me.id, me.id)
+                && state.activities[story.activityID].map { $0.status == .published && !isBlocked($0.hostID, me.id) } == true
+        }
+        let groups = Dictionary(grouping: live, by: \.activityID).compactMap { activityID, rows -> StoryGroup? in
+            guard let activity = state.activities[activityID] else { return nil }
+            let stories = rows.sorted { $0.createdAt < $1.createdAt }.map(makeStory)
+            let seen = Set(stories.map(\.id).filter { state.storyViews["\($0)|\(me.id)"] != nil })
+            return StoryGroup(activityID: activityID, activityTitle: activity.title, category: activity.category,
+                              coverImageURL: activity.coverImageURL, host: summary(activity.hostID),
+                              stories: stories, seenStoryIDs: seen)
+        }
+        return groups.sorted {
+            if $0.hasUnseen != $1.hasUnseen { return $0.hasUnseen }
+            return ($0.stories.last?.createdAt ?? .distantPast) > ($1.stories.last?.createdAt ?? .distantPast)
+        }
+    }
+
+    func storyEligibleActivities() async throws -> [Activity] {
+        let me = try requireUser()
+        return state.activities.values
+            .filter { $0.status == .published && $0.effectiveEndForStories > now && isParticipant($0, me.id) }
+            .sorted { $0.startsAt < $1.startsAt }
+            .map { makeActivity($0, viewer: me.id) }
+    }
+
+    func postStory(_ draft: StoryDraft) async throws -> Story {
+        let me = try requireActiveUser()
+        guard draft.isValid, let activityID = draft.activityID else { throw AppError.rule(.invalidInput) }
+        guard let activity = state.activities[activityID], activity.status == .published,
+              activity.effectiveEndForStories > now else { throw AppError.rule(.activityNotOpen) }
+        guard isParticipant(activity, me.id) else { throw AppError.rule(.notParticipant) }
+        try checkRate("story", userID: me.id, limit: 10, window: 86_400)
+        var mediaURL: URL?
+        if draft.kind == .photo, let data = draft.imageData { mediaURL = try storeCover(data) }
+        let text = draft.text.trimmed
+        let row = MockState.StoryRow(id: UUID(), activityID: activityID, authorID: me.id, kind: draft.kind,
+                                     text: text.isEmpty ? nil : text, mediaURL: mediaURL, background: draft.background,
+                                     createdAt: now, expiresAt: now.addingTimeInterval(Story.lifetime))
+        state.stories.append(row)
+        state.storyViews["\(row.id)|\(me.id)"] = now
+        persist()
+        return makeStory(row)
+    }
+
+    func markStorySeen(_ storyID: UUID) async throws {
+        let me = try requireUser()
+        guard state.storyViews["\(storyID)|\(me.id)"] == nil else { return }
+        state.storyViews["\(storyID)|\(me.id)"] = now
+        persist()
+    }
+
+    func deleteStory(_ storyID: UUID) async throws {
+        let me = try requireUser()
+        guard let index = state.stories.firstIndex(where: { $0.id == storyID }) else { throw AppError.notFound }
+        let story = state.stories[index]
+        let isHost = state.activities[story.activityID]?.hostID == me.id
+        guard story.authorID == me.id || isHost else { throw AppError.rule(.notHost) }
+        state.stories.remove(at: index)
+        persist()
+    }
+}
+
 // MARK: - SafetyRepository
 
 extension MockBackend: SafetyRepository {
@@ -719,7 +795,7 @@ extension MockBackend: SafetyRepository {
         if state.reports.contains(where: { $0.reporterID == me.id && $0.clientRequestID == draft.clientRequestID }) { return }
         try checkRate("report", userID: me.id, limit: 10, window: 86_400)
         state.reports.append(.init(id: UUID(), reporterID: me.id, reportedUserID: draft.reportedUserID,
-                                   activityID: draft.activityID, messageID: draft.messageID, category: category,
+                                   activityID: draft.activityID, messageID: draft.messageID, storyID: draft.storyID, category: category,
                                    description: draft.description.trimmed, status: .open, createdAt: now,
                                    clientRequestID: draft.clientRequestID))
         persist()

@@ -23,6 +23,7 @@ struct ReportDraft: Sendable, Equatable {
     var reportedUserID: UUID
     var activityID: UUID?
     var messageID: UUID?
+    var storyID: UUID?
     var category: ReportCategory?
     var description = ""
     var clientRequestID = UUID()

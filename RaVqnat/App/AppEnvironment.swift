@@ -13,6 +13,7 @@ final class AppEnvironment {
     let memberships: any MembershipRepository
     let chat: any ChatRepository
     let safety: any SafetyRepository
+    let stories: any StoryRepository
     let verification: any VerificationRepository
     let notificationsRepository: any NotificationRepository
     let push: PushNotificationService
@@ -23,7 +24,7 @@ final class AppEnvironment {
 
     init(config: AppConfig, auth: any AuthRepository, profiles: any ProfileRepository,
          activities: any ActivityRepository, memberships: any MembershipRepository, chat: any ChatRepository,
-         safety: any SafetyRepository, verification: any VerificationRepository,
+         safety: any SafetyRepository, stories: any StoryRepository, verification: any VerificationRepository,
          notifications: any NotificationRepository, preferences: LocalPreferences = LocalPreferences()) {
         self.config = config
         self.auth = auth
@@ -32,6 +33,7 @@ final class AppEnvironment {
         self.memberships = memberships
         self.chat = chat
         self.safety = safety
+        self.stories = stories
         self.verification = verification
         self.notificationsRepository = notifications
         self.preferences = preferences
@@ -64,7 +66,7 @@ final class AppEnvironment {
         let preferences = LocalPreferences(defaults: config.isUITesting ? UserDefaults(suiteName: "uitest")! : .standard)
         if config.resetMockState { preferences.reset() }
         return AppEnvironment(config: config, auth: backend, profiles: backend, activities: backend,
-                              memberships: backend, chat: backend, safety: backend, verification: backend,
+                              memberships: backend, chat: backend, safety: backend, stories: backend, verification: backend,
                               notifications: backend, preferences: preferences)
     }
 

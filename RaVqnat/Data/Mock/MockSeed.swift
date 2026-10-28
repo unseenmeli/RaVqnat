@@ -62,6 +62,16 @@ enum MockSeed {
         (13, 1, "Table is reserved under 'RaVqnat'.", 500),
     ]
 
+    /// Text stories (no photos of people in seed data).
+    static let seedStories: [(activity: Int, user: Int, text: String, background: StoryBackground, minutesAgo: Int)] = [
+        (2, 2, "Court is booked from 19:00 🏀\nStill 6 spots — come play!", .ink, 40),
+        (2, 12, "Bringing a second ball. Beginners very welcome.", .sky, 25),
+        (1, 1, "I'll have a spare guitar 🎸\nNo experience needed.", .pink, 90),
+        (8, 9, "Tonight's line-up: Codenames, Ticket to Ride, Azul 🎲", .sage, 120),
+        (9, 12, "Forecast: sunny ☀️ Meet at the lower cable car station.", .mist, 200),
+        (7, 7, "Golden hour starts around 18:40. Phones are perfect cameras.", .ink, 300),
+    ]
+
     static let simulatedReplies = [
         "Sounds great, see you there!",
         "👍",
@@ -111,6 +121,14 @@ enum MockSeed {
             }
         }
 
+        for (index, story) in seedStories.enumerated() {
+            let created = now.addingTimeInterval(-Double(story.minutesAgo) * 60)
+            state.stories.append(.init(
+                id: UUID(uuidString: String(format: "30000000-0000-4000-8000-%012d", index + 1))!,
+                activityID: aid(story.activity), authorID: uid(story.user), kind: .text, text: story.text, mediaURL: nil,
+                background: story.background, createdAt: created, expiresAt: created.addingTimeInterval(Story.lifetime)))
+        }
+
         for (index, message) in seedChat.enumerated() {
             state.messages.append(.init(
                 id: UUID(uuidString: String(format: "20000000-0000-4000-8000-%012d", index + 1))!,
@@ -121,7 +139,7 @@ enum MockSeed {
     }
 
     static func demoUser(now: Date = .now, onboarded: Bool) -> MockState.User {
-        .init(id: demoUserID, displayName: onboarded ? "Demo User" : "", bio: "", avatarURL: nil,
+        .init(id: demoUserID, displayName: onboarded ? "Meli" : "", bio: "", avatarURL: nil,
               interestIDs: onboarded ? ["coffee", "chess"] : [], preferredLanguage: .en,
               homeNeighborhoodID: onboarded ? "vake" : nil, onboardingCompleted: onboarded,
               ageAssurance: onboarded ? .selfDeclared : .none, verification: .unverified,

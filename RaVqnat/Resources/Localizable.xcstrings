@@ -2660,6 +2660,66 @@
         }
       }
     },
+    "filter.beginner.subtitle": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nothing to prepare, no experience needed"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "მომზადება და გამოცდილება არ არის საჭირო"
+          }
+        }
+      }
+    },
+    "filter.categories_selected %lld": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld category"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld categories"
+                }
+              }
+            }
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld კატეგორია"
+          }
+        }
+      }
+    },
+    "filter.clear_all": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clear all"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "გასუფთავება"
+          }
+        }
+      }
+    },
     "filter.date": {
       "localizations": {
         "en": {
@@ -2688,6 +2748,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "ნებისმიერ დროს"
+          }
+        }
+      }
+    },
+    "filter.date.custom": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pick dates"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "დღეების არჩევა"
           }
         }
       }
@@ -2756,6 +2832,50 @@
         }
       }
     },
+    "filter.days_hint": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap the days that work for you."
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "მონიშნე შენთვის მოსახერხებელი დღეები."
+          }
+        }
+      }
+    },
+    "filter.days_selected %lld": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld day"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld days"
+                }
+              }
+            }
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld დღე"
+          }
+        }
+      }
+    },
     "filter.has_spots": {
       "localizations": {
         "en": {
@@ -2772,6 +2892,38 @@
         }
       }
     },
+    "filter.has_spots.subtitle": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hide activities that are already full"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "სავსე აქტივობების დამალვა"
+          }
+        }
+      }
+    },
+    "filter.near_me.note": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your location is only used for this search and never shared."
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "მდებარეობა მხოლოდ ამ ძიებისთვის გამოიყენება და არავის ეზიარება."
+          }
+        }
+      }
+    },
     "filter.neighborhood": {
       "localizations": {
         "en": {
@@ -2784,6 +2936,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "უბანი"
+          }
+        }
+      }
+    },
+    "filter.open": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open filters"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ფილტრების გახსნა"
           }
         }
       }
@@ -2809,13 +2977,29 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Categories"
+            "value": "What"
           }
         },
         "ka": {
           "stringUnit": {
             "state": "translated",
-            "value": "კატეგორიები"
+            "value": "რა"
+          }
+        }
+      }
+    },
+    "filter.section.category.subtitle": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose as many as you like"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "აირჩიე რამდენიც გინდა"
           }
         }
       }
@@ -2836,6 +3020,38 @@
         }
       }
     },
+    "filter.section.date.subtitle": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pick a moment, or choose exact days"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "აირჩიე დრო ან კონკრეტული დღეები"
+          }
+        }
+      }
+    },
+    "filter.section.extras": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Good to know"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "კარგია იცოდე"
+          }
+        }
+      }
+    },
     "filter.section.neighborhood": {
       "localizations": {
         "en": {
@@ -2848,6 +3064,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "სად"
+          }
+        }
+      }
+    },
+    "filter.section.neighborhood.subtitle": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anywhere in Tbilisi, near you, or one neighbourhood"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "მთელი თბილისი, შენ ახლოს ან კონკრეტული უბანი"
+          }
+        }
+      }
+    },
+    "filter.show": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show activities"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "აქტივობების ჩვენება"
           }
         }
       }
@@ -6764,6 +7012,310 @@
           "stringUnit": {
             "state": "translated",
             "value": "ინტერნეტი არ არის"
+          }
+        }
+      }
+    },
+    "stories.bubble %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stories from %@"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ისტორიები: %@"
+          }
+        }
+      }
+    },
+    "stories.compose.activity": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Post to"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "სად გამოქვეყნდეს"
+          }
+        }
+      }
+    },
+    "stories.compose.caption_placeholder": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add a caption (optional)"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "წარწერა (არასავალდებულო)"
+          }
+        }
+      }
+    },
+    "stories.compose.footer": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stories disappear after 24 hours. Anyone who can see the activity can see its stories."
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ისტორიები 24 საათში ქრება. მათ ხედავს ყველა, ვისაც აქტივობის ნახვა შეუძლია."
+          }
+        }
+      }
+    },
+    "stories.compose.none.message": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You can share stories for activities you host or have been approved for."
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ისტორიების გაზიარება შეგიძლია აქტივობებზე, რომლებსაც მასპინძლობ ან სადაც დაგადასტურეს."
+          }
+        }
+      }
+    },
+    "stories.compose.none.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Join or host something first"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ჯერ შეუერთდი ან მოაწყვე რამე"
+          }
+        }
+      }
+    },
+    "stories.compose.photo": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Photo"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ფოტო"
+          }
+        }
+      }
+    },
+    "stories.compose.preview": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Say something about your plan"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "თქვი რამე შენს გეგმაზე"
+          }
+        }
+      }
+    },
+    "stories.compose.share": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Share"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "გაზიარება"
+          }
+        }
+      }
+    },
+    "stories.compose.text": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Text"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ტექსტი"
+          }
+        }
+      }
+    },
+    "stories.compose.text_placeholder": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What's happening?"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "რა ხდება?"
+          }
+        }
+      }
+    },
+    "stories.compose.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New story"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ახალი ისტორია"
+          }
+        }
+      }
+    },
+    "stories.delete": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete story"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ისტორიის წაშლა"
+          }
+        }
+      }
+    },
+    "stories.new": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ახალი"
+          }
+        }
+      }
+    },
+    "stories.next": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Next story"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "შემდეგი ისტორია"
+          }
+        }
+      }
+    },
+    "stories.previous": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Previous story"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "წინა ისტორია"
+          }
+        }
+      }
+    },
+    "stories.report": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Report story"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ისტორიის გასაჩივრება"
+          }
+        }
+      }
+    },
+    "stories.view_activity": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "View activity"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "აქტივობის ნახვა"
+          }
+        }
+      }
+    },
+    "stories.yours": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your story"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "შენი ისტორია"
           }
         }
       }

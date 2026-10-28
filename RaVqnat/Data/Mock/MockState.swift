@@ -75,11 +75,24 @@ struct MockState: Codable, Sendable {
         var reportedUserID: UUID?
         var activityID: UUID?
         var messageID: UUID?
+        var storyID: UUID?
         var category: ReportCategory
         var description: String
         var status: ModerationStatus
         var createdAt: Date
         var clientRequestID: UUID
+    }
+
+    struct StoryRow: Codable, Sendable {
+        var id: UUID
+        var activityID: UUID
+        var authorID: UUID?
+        var kind: StoryKind
+        var text: String?
+        var mediaURL: URL?
+        var background: StoryBackground
+        var createdAt: Date
+        var expiresAt: Date
     }
 
     struct FeedbackRow: Codable, Sendable {
@@ -91,7 +104,7 @@ struct MockState: Codable, Sendable {
         var createdAt: Date
     }
 
-    var schemaVersion = 1
+    var schemaVersion = 2
     var currentUserID: UUID?
     var users: [UUID: User] = [:]
     var activities: [UUID: ActivityRow] = [:]
@@ -100,7 +113,16 @@ struct MockState: Codable, Sendable {
     var blocks: [BlockRow] = []
     var reports: [ReportRow] = []
     var feedback: [FeedbackRow] = []
+    var stories: [StoryRow] = []
+    var storyViews: [String: Date] = [:]
     var readState: [String: Date] = [:]
     var preferences: [UUID: NotificationPreferences] = [:]
     var deviceTokens: [String: UUID] = [:]
+}
+
+extension MockState.ActivityRow {
+    /// Stories can be posted until 24 h after an activity ends ("moments from today").
+    var effectiveEndForStories: Date {
+        (endsAt ?? startsAt.addingTimeInterval(2 * 3600)).addingTimeInterval(Story.lifetime)
+    }
 }

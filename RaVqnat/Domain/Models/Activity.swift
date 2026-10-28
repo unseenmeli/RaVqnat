@@ -134,7 +134,7 @@ struct ActivityDraft: Sendable, Equatable {
 }
 
 enum DateFilter: String, CaseIterable, Sendable, Identifiable {
-    case any, today, tomorrow, thisWeek, weekend
+    case any, today, tomorrow, weekend, thisWeek, custom
     var id: String { rawValue }
     var title: String {
         switch self {
@@ -143,6 +143,18 @@ enum DateFilter: String, CaseIterable, Sendable, Identifiable {
         case .tomorrow: String(localized: "filter.date.tomorrow")
         case .thisWeek: String(localized: "filter.date.this_week")
         case .weekend: String(localized: "filter.date.weekend")
+        case .custom: String(localized: "filter.date.custom")
+        }
+    }
+
+    var symbol: String {
+        switch self {
+        case .any: "infinity"
+        case .today: "sun.max"
+        case .tomorrow: "sunrise"
+        case .weekend: "figure.walk"
+        case .thisWeek: "calendar"
+        case .custom: "calendar.badge.plus"
         }
     }
 
@@ -152,7 +164,7 @@ enum DateFilter: String, CaseIterable, Sendable, Identifiable {
         let startOfToday = cal.startOfDay(for: now)
         func day(_ offset: Int) -> Date { cal.date(byAdding: .day, value: offset, to: startOfToday)! }
         switch self {
-        case .any: return nil
+        case .any, .custom: return nil
         case .today: return DateInterval(start: now, end: day(1))
         case .tomorrow: return DateInterval(start: day(1), end: day(2))
         case .thisWeek: return DateInterval(start: now, end: day(7))
@@ -172,18 +184,24 @@ struct ActivityQuery: Sendable, Equatable {
     var radiusMeters: Double = 15_000
     var categories: Set<ActivityCategory> = []
     var date: DateFilter = .any
+    /// Exact days (Tbilisi calendar, "yyyy-MM-dd") when `date == .custom`.
+    var customDays: Set<String> = []
     var neighborhoodID: String?
     var onlyWithSpots = false
     var beginnerFriendly = false
 
-    var activeFilterCount: Int {
-        var count = 0
-        if !categories.isEmpty { count += 1 }
-        if date != .any { count += 1 }
-        if neighborhoodID != nil { count += 1 }
-        if onlyWithSpots { count += 1 }
-        if beginnerFriendly { count += 1 }
-        return count
+    /// True if the start date passes the date filter (preset interval or exact days).
+    func matchesDate(_ startsAt: Date, now: Date = .now) -> Bool {
+        switch date {
+        case .any: true
+        case .custom: customDays.isEmpty || customDays.contains(ActivityQuery.dayKey(startsAt))
+        default: date.interval(now: now)?.contains(startsAt) ?? true
+        }
+    }
+
+    static func dayKey(_ date: Date) -> String {
+        let c = ActivityTime.calendar().dateComponents([.year, .month, .day], from: date)
+        return String(format: "%04d-%02d-%02d", c.year ?? 0, c.month ?? 0, c.day ?? 0)
     }
 }
 

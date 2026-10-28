@@ -59,6 +59,16 @@ protocol ChatRepository: Sendable {
     func liveMessages(activityID: UUID) -> AsyncStream<ChatMessage>
 }
 
+protocol StoryRepository: Sendable {
+    /// Live stories (not expired) from activities the viewer can see, unseen groups first.
+    func storyFeed() async throws -> [StoryGroup]
+    /// Activities the viewer may post a story to (hosting, or approved participant).
+    func storyEligibleActivities() async throws -> [Activity]
+    func postStory(_ draft: StoryDraft) async throws -> Story
+    func markStorySeen(_ storyID: UUID) async throws
+    func deleteStory(_ storyID: UUID) async throws
+}
+
 protocol SafetyRepository: Sendable {
     func block(userID: UUID) async throws
     func unblock(userID: UUID) async throws

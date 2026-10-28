@@ -44,7 +44,7 @@ final class OnboardingUITests: XCTestCase {
         snapshot(app, "07-neighborhood")
         next.tap()
 
-        XCTAssertTrue(app.buttons["explore.location"].waitForExistence(timeout: 5), "Explore should appear after onboarding")
+        XCTAssertTrue(app.buttons["explore.filters"].waitForExistence(timeout: 5), "Explore should appear after onboarding")
         snapshot(app, "08-explore")
     }
 }

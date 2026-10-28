@@ -1,22 +1,63 @@
 import Foundation
 import Observation
 
+enum SearchArea: Hashable, Sendable {
+    case anywhere
+    case nearMe
+    case neighborhood(String)
+}
+
+/// Everything the user can filter by. Edited as a whole in the filter sheet.
+struct ExploreFilters: Equatable, Sendable {
+    var area: SearchArea = .anywhere
+    var categories: Set<ActivityCategory> = []
+    var date: DateFilter = .any
+    var customDays: Set<String> = []
+    var onlyWithSpots = false
+    var beginnerFriendly = false
+
+    var isEmpty: Bool { self == ExploreFilters() }
+
+    /// Short labels describing the active filters, for the home-screen summary chip.
+    var summary: [String] {
+        var parts: [String] = []
+        switch date {
+        case .any: break
+        case .custom where !customDays.isEmpty: parts.append(String(localized: "filter.days_selected \(customDays.count)"))
+        case .custom: break
+        default: parts.append(date.title)
+        }
+        if categories.count == 1, let only = categories.first { parts.append(only.title) }
+        else if categories.count > 1 { parts.append(String(localized: "filter.categories_selected \(categories.count)")) }
+        switch area {
+        case .anywhere: break
+        case .nearMe: parts.append(String(localized: "explore.near_you"))
+        case .neighborhood(let id): if let hood = Neighborhood.find(id) { parts.append(hood.name) }
+        }
+        if onlyWithSpots { parts.append(String(localized: "filter.has_spots")) }
+        if beginnerFriendly { parts.append(String(localized: "filter.beginner")) }
+        return parts
+    }
+}
+
 @MainActor
 @Observable
 final class ExploreViewModel {
-    var query = ActivityQuery()
+    private(set) var filters = ExploreFilters()
+    private(set) var query = ActivityQuery()
     private(set) var state: LoadState<[Activity]> = .idle
     private(set) var nextCursor: Int?
     private(set) var isLoadingMore = false
     private(set) var joiningIDs: Set<UUID> = []
-    /// Label for the current search origin ("Near you" or a neighbourhood).
-    private(set) var originNeighborhoodID: String?
-    private(set) var usesDeviceLocation = false
     var toast: String?
     var error: AppError?
+    /// Set when "Near me" was chosen but location is unavailable.
+    var locationUnavailable = false
 
     private let activities: any ActivityRepository
     private let memberships: any MembershipRepository
+    /// Distances are measured from the user's home neighbourhood unless "Near me" is active.
+    private var homeCenter: Coordinate = .tbilisiCenter
     let pageSize = 10
     private var loadGeneration = 0
 
@@ -25,16 +66,42 @@ final class ExploreViewModel {
         self.memberships = memberships
     }
 
-    func setNeighborhood(_ id: String?) {
-        originNeighborhoodID = id
-        usesDeviceLocation = false
-        query.origin = Neighborhood.find(id)?.center ?? .tbilisiCenter
+    func configure(homeNeighborhoodID: String?) {
+        homeCenter = Neighborhood.find(homeNeighborhoodID)?.center ?? .tbilisiCenter
+        rebuildQuery(deviceLocation: nil)
     }
 
-    func setDeviceLocation(_ coordinate: Coordinate) {
-        usesDeviceLocation = true
-        originNeighborhoodID = Neighborhood.nearest(to: coordinate).id
-        query.origin = coordinate
+    /// Applies new filters. "Near me" asks for a single when-in-use location fix.
+    func apply(_ newFilters: ExploreFilters, location: LocationProvider) async {
+        var resolved = newFilters
+        var deviceLocation: Coordinate?
+        if newFilters.area == .nearMe {
+            deviceLocation = await location.currentLocation()
+            if deviceLocation == nil {
+                resolved.area = .anywhere
+                locationUnavailable = true
+            }
+        }
+        filters = resolved
+        rebuildQuery(deviceLocation: deviceLocation)
+    }
+
+    func clearFilters() {
+        filters = ExploreFilters()
+        rebuildQuery(deviceLocation: nil)
+    }
+
+    private func rebuildQuery(deviceLocation: Coordinate?) {
+        var query = ActivityQuery()
+        query.origin = deviceLocation ?? homeCenter
+        query.radiusMeters = deviceLocation != nil ? 5_000 : 15_000
+        query.categories = filters.categories
+        query.date = filters.date
+        query.customDays = filters.date == .custom ? filters.customDays : []
+        if case .neighborhood(let id) = filters.area { query.neighborhoodID = id }
+        query.onlyWithSpots = filters.onlyWithSpots
+        query.beginnerFriendly = filters.beginnerFriendly
+        self.query = query
     }
 
     func load() async {
@@ -94,9 +161,5 @@ final class ExploreViewModel {
         guard var items = state.value, let index = items.firstIndex(where: { $0.id == id }) else { return }
         mutate(&items[index])
         state = .loaded(items)
-    }
-
-    func toggleCategory(_ category: ActivityCategory) {
-        if query.categories.contains(category) { query.categories.remove(category) } else { query.categories.insert(category) }
     }
 }
