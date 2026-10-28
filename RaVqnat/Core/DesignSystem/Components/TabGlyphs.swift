@@ -11,12 +11,13 @@ struct TabGlyph: View {
 
     var body: some View {
         let shape = shape(for: kind)
+        // Both states stay in the hierarchy and crossfade in place, so nothing is left behind
+        // when the icon moves while switching.
         ZStack {
-            if isFilled {
-                shape.fill(style: FillStyle(eoFill: false))
-            } else {
-                shape.stroke(style: StrokeStyle(lineWidth: size * 0.075, lineCap: .round, lineJoin: .round))
-            }
+            shape.stroke(style: StrokeStyle(lineWidth: size * 0.075, lineCap: .round, lineJoin: .round))
+                .opacity(isFilled ? 0 : 1)
+            shape.fill()
+                .opacity(isFilled ? 1 : 0)
         }
         .frame(width: size, height: size)
         .accessibilityHidden(true)
@@ -97,27 +98,56 @@ struct ConversationShape: Shape {
     }
 }
 
-/// A label that reveals its letters left to right by growing from zero width, so the icon next to
-/// it glides sideways as the word types itself in.
+/// A label whose letters arrive one after another — each rises, scales up and sharpens from a
+/// blur with a small spring — while the label's width grows so the icon beside it glides sideways.
+/// Under Reduce Motion the word simply appears.
 struct RevealingLabel: View {
-    let key: LocalizedStringKey
+    let title: String
     let isRevealed: Bool
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var fullWidth: CGFloat = 0
+    @State private var visibleCount = 0
+
+    static let letterDelay: Duration = .milliseconds(40)
+
+    private var characters: [Character] { Array(title) }
 
     var body: some View {
-        Text(key)
-            .font(.subheadline.weight(.semibold))
-            .lineLimit(1)
-            .fixedSize()
-            .onGeometryChange(for: CGFloat.self, of: { $0.size.width }) { fullWidth = $0 }
-            .frame(width: isRevealed ? fullWidth : 0, alignment: .leading)
-            .mask(alignment: .leading) {
-                // Soft trailing edge while the word is still appearing.
-                LinearGradient(stops: [.init(color: .black, location: 0), .init(color: .black, location: 0.8),
-                                       .init(color: .black.opacity(isRevealed ? 1 : 0), location: 1)],
-                               startPoint: .leading, endPoint: .trailing)
+        HStack(spacing: 0) {
+            ForEach(Array(characters.enumerated()), id: \.offset) { index, character in
+                let shown = index < visibleCount
+                Text(String(character))
+                    .opacity(shown ? 1 : 0)
+                    .blur(radius: shown ? 0 : 4)
+                    .scaleEffect(shown ? 1 : 0.5, anchor: .bottom)
+                    .offset(y: shown ? 0 : 8)
             }
-            .opacity(isRevealed ? 1 : 0)
-            .accessibilityHidden(true)
+        }
+        .font(.subheadline.weight(.semibold))
+        .lineLimit(1)
+        .fixedSize()
+        .onGeometryChange(for: CGFloat.self, of: { $0.size.width }) { fullWidth = $0 }
+        // The width eases open over roughly the time the letters take, so the icon glides with them.
+        .frame(width: isRevealed ? fullWidth : 0, alignment: .leading)
+        .animation(reduceMotion ? nil : .easeOut(duration: 0.12 + 0.04 * Double(characters.count)), value: isRevealed)
+        .task(id: isRevealed) { await play() }
+        .accessibilityHidden(true)
+    }
+
+    private func play() async {
+        guard isRevealed else {
+            visibleCount = 0
+            return
+        }
+        if reduceMotion {
+            visibleCount = characters.count
+            return
+        }
+        visibleCount = 0
+        for count in 1...max(1, characters.count) {
+            try? await Task.sleep(for: Self.letterDelay)
+            if Task.isCancelled { return }
+            withAnimation(.spring(duration: 0.32, bounce: 0.45)) { visibleCount = count }
+        }
     }
 }

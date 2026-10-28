@@ -146,7 +146,7 @@ private struct RVTabBar: View {
         } label: {
             HStack(spacing: showsLabel ? 7 : 0) {
                 icon(for: tab, isSelected: isSelected)
-                RevealingLabel(key: tab.titleKey, isRevealed: showsLabel)
+                RevealingLabel(title: tab.title, isRevealed: showsLabel)
             }
             .foregroundStyle(isSelected ? Theme.Palette.ink : Theme.Palette.inkSecondary)
             .padding(.horizontal, showsLabel ? Theme.Spacing.l : 0)
@@ -221,6 +221,16 @@ private struct RVTabBar: View {
 }
 
 extension AppTab {
+    var title: String {
+        switch self {
+        case .explore: String(localized: "tab.explore")
+        case .map: String(localized: "tab.map")
+        case .host: String(localized: "tab.host")
+        case .chats: String(localized: "tab.chats")
+        case .profile: String(localized: "tab.profile")
+        }
+    }
+
     var titleKey: LocalizedStringKey {
         switch self {
         case .explore: "tab.explore"
@@ -251,8 +261,17 @@ private struct TabIcon: View {
                 .scaledToFit()
                 .frame(width: size, height: size)
         } else {
-            Image(systemName: isSelected && filledVariant && UIImage(systemName: "\(symbol).fill") != nil ? "\(symbol).fill" : symbol)
-                .font(.system(size: size * 0.92, weight: isSelected ? .semibold : .regular))
+            let hasFill = filledVariant && UIImage(systemName: "\(symbol).fill") != nil
+            // Outline and filled variants crossfade in place (no ghost when the icon moves).
+            ZStack {
+                Image(systemName: symbol)
+                    .opacity(isSelected && hasFill ? 0 : 1)
+                if hasFill {
+                    Image(systemName: "\(symbol).fill")
+                        .opacity(isSelected ? 1 : 0)
+                }
+            }
+            .font(.system(size: size * 0.92, weight: .regular))
         }
     }
 
