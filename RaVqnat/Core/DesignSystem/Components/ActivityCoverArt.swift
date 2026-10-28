@@ -9,19 +9,19 @@ struct ActivityCoverArt: View {
 
     var body: some View {
         ZStack {
-            Theme.Palette.surfaceMuted
+            category.softTint
             GeometryReader { proxy in
                 let rng = SeededRandom(seed: seed)
                 // Oversized, cropped watermark…
                 Image(systemName: category.symbol)
                     .font(.system(size: proxy.size.height * 1.1, weight: .bold))
-                    .foregroundStyle(Theme.Palette.ink.opacity(0.06))
+                    .foregroundStyle(category.tint.opacity(0.12))
                     .rotationEffect(.degrees(rng.value(0, -14, 14)))
                     .position(x: proxy.size.width * rng.value(1, 0.62, 0.85), y: proxy.size.height * rng.value(2, 0.55, 0.75))
                 // …and a crisp mark.
                 Image(systemName: category.symbol)
                     .font(.system(size: min(proxy.size.height * 0.26, 64), weight: .semibold))
-                    .foregroundStyle(Theme.Palette.ink)
+                    .foregroundStyle(category.tint)
                     .position(x: proxy.size.width / 2, y: proxy.size.height / 2)
             }
             if let imageURL {

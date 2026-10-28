@@ -37,7 +37,7 @@ struct VerifiedBadge: View {
     var body: some View {
         Image(systemName: "checkmark.seal.fill")
             .font(size)
-            .foregroundStyle(Theme.Palette.accent)
+            .foregroundStyle(Theme.Palette.trust)
             .accessibilityLabel(Text("verification.badge.accessibility"))
     }
 }

@@ -52,10 +52,10 @@ private struct RVTabBar: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            item(.explore, symbol: "house", label: "tab.explore")
-            item(.map, symbol: "map", label: "tab.map")
+            item(.explore, asset: "tab-explore", symbol: "house", label: "tab.explore")
+            item(.map, asset: "tab-map", symbol: "map", label: "tab.map")
             createButton
-            item(.chats, symbol: "bubble.left.and.bubble.right", label: "tab.chats", badge: unreadCount > 0)
+            item(.chats, asset: "tab-chats", symbol: "bubble.left.and.bubble.right", label: "tab.chats", badge: unreadCount > 0)
             profileItem
         }
         .padding(.horizontal, Theme.Spacing.s)
@@ -65,11 +65,10 @@ private struct RVTabBar: View {
         .sensoryFeedback(.selection, trigger: selection)
     }
 
-    private func item(_ tab: AppTab, symbol: String, label: LocalizedStringKey, badge: Bool = false) -> some View {
+    private func item(_ tab: AppTab, asset: String, symbol: String, label: LocalizedStringKey, badge: Bool = false) -> some View {
         let isSelected = selection == tab
         return Button { selection = tab } label: {
-            Image(systemName: isSelected ? "\(symbol).fill" : symbol)
-                .font(.system(size: 22, weight: isSelected ? .semibold : .regular))
+            TabIcon(asset: asset, symbol: symbol, isSelected: isSelected)
                 .foregroundStyle(isSelected ? Theme.Palette.ink : Theme.Palette.inkSecondary)
                 .overlay(alignment: .topTrailing) {
                     if badge {
@@ -91,8 +90,7 @@ private struct RVTabBar: View {
     private var createButton: some View {
         let isSelected = selection == .host
         return Button { selection = .host } label: {
-            Image(systemName: "plus")
-                .font(.system(size: 18, weight: .bold))
+            TabIcon(asset: "tab-create", symbol: "plus", isSelected: isSelected, size: 20, filledVariant: false)
                 .foregroundStyle(isSelected ? Theme.Palette.ink : Theme.Palette.canvas)
                 .frame(width: 48, height: 34)
                 .background(isSelected ? Theme.Palette.surfaceMuted : Theme.Palette.ink,
@@ -119,6 +117,37 @@ private struct RVTabBar: View {
         .accessibilityLabel(Text("tab.profile"))
         .accessibilityAddTraits(isSelected ? [.isSelected, .isButton] : .isButton)
         .accessibilityIdentifier("tab.profile")
+    }
+}
+
+/// Tab icon that uses a custom asset when one is provided and falls back to an SF Symbol.
+///
+/// Custom icons live in Assets.xcassets as template images named `tab-<name>` (unselected) and
+/// `tab-<name>-selected` (optional). Names: tab-explore, tab-map, tab-create, tab-chats.
+private struct TabIcon: View {
+    let asset: String
+    let symbol: String
+    let isSelected: Bool
+    var size: CGFloat = 24
+    var filledVariant = true
+
+    var body: some View {
+        if let name = assetName {
+            Image(name)
+                .renderingMode(.template)
+                .resizable()
+                .scaledToFit()
+                .frame(width: size, height: size)
+        } else {
+            Image(systemName: isSelected && filledVariant ? "\(symbol).fill" : symbol)
+                .font(.system(size: size * 0.92, weight: isSelected ? .semibold : .regular))
+        }
+    }
+
+    private var assetName: String? {
+        let selectedName = "\(asset)-selected"
+        if isSelected, UIImage(named: selectedName) != nil { return selectedName }
+        return UIImage(named: asset) != nil ? asset : nil
     }
 }
 

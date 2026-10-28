@@ -50,9 +50,11 @@ struct ActivityCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.m) {
+            // Full-bleed post: generously rounded top, straight bottom edge.
             ActivityCoverArt(category: activity.category, seed: activity.id, imageURL: activity.coverImageURL)
-                .frame(height: 210)
-                .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
+                .frame(height: 260)
+                .clipShape(UnevenRoundedRectangle(topLeadingRadius: Theme.Radius.post, topTrailingRadius: Theme.Radius.post,
+                                                  style: .continuous))
                 .overlay(alignment: .topLeading) {
                     HStack {
                         CategoryTag(category: activity.category)
@@ -61,14 +63,14 @@ struct ActivityCard: View {
                                    background: .clear)
                             .background(.thinMaterial, in: Capsule())
                     }
-                    .padding(Theme.Spacing.m)
+                    .padding(Theme.Spacing.l)
                 }
 
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
                     Text(ActivityTime.smartString(activity.startsAt, timeZoneID: activity.timeZoneID))
                         .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(Theme.Palette.accentText)
+                        .foregroundStyle(Theme.Palette.ink)
                     Spacer()
                     if let distance = activity.distanceMeters {
                         Text(LocationPrivacy.distanceString(distance))
@@ -87,6 +89,7 @@ struct ActivityCard: View {
                     .font(.subheadline)
                     .foregroundStyle(Theme.Palette.inkSecondary)
             }
+            .padding(.horizontal, Theme.Spacing.screen)
 
             HStack(spacing: Theme.Spacing.s) {
                 AvatarView(name: activity.host.displayName, url: activity.host.avatarURL, size: 28)
@@ -98,6 +101,7 @@ struct ActivityCard: View {
                 Spacer(minLength: Theme.Spacing.s)
                 joinButton
             }
+            .padding(.horizontal, Theme.Spacing.screen)
         }
         .contentShape(Rectangle())
         .accessibilityElement(children: .contain)
@@ -132,10 +136,14 @@ struct CompactLabelStyle: LabelStyle {
 struct ActivityCardSkeleton: View {
     var body: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.m) {
-            RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous).fill(Theme.Palette.surfaceMuted).frame(height: 210)
-            Text(verbatim: "Saturday, 17:00").font(.subheadline)
-            Text(verbatim: "Placeholder activity title here").font(.title3)
-            Text(verbatim: "Neighbourhood").font(.subheadline)
+            UnevenRoundedRectangle(topLeadingRadius: Theme.Radius.post, topTrailingRadius: Theme.Radius.post, style: .continuous)
+                .fill(Theme.Palette.surfaceMuted).frame(height: 260)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(verbatim: "Saturday, 17:00").font(.subheadline)
+                Text(verbatim: "Placeholder activity title here").font(.title3)
+                Text(verbatim: "Neighbourhood").font(.subheadline)
+            }
+            .padding(.horizontal, Theme.Spacing.screen)
         }
         .skeleton()
     }

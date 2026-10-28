@@ -113,7 +113,8 @@ struct ProfileHeader: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 6) {
                         ForEach(interestIDs.compactMap(Interest.find)) { interest in
-                            StatusPill(text: interest.title, symbol: interest.category.symbol)
+                            StatusPill(text: interest.title, symbol: interest.category.symbol,
+                                       background: interest.category.softTint, symbolTint: interest.category.tint)
                         }
                     }
                     .padding(.horizontal, Theme.Spacing.screen)

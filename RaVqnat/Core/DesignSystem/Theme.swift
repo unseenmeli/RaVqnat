@@ -25,8 +25,9 @@ enum Theme {
         static let onBrand = canvas
         static let brandSoft = surfaceMuted
 
-        static let trust = accent
-        static let trustSoft = surfaceMuted
+        /// Verified badge and trust cues — calm blue, distinct from the brand pink.
+        static let trust = Color(light: 0x2F6BFF, dark: 0x6FA0FF)
+        static let trustSoft = Color(light: 0xE8EFFF, dark: 0x15213D)
         static let success = Color(light: 0x16A34A, dark: 0x4ADE80)
         static let warning = Color(light: 0xB45309, dark: 0xFBBF24)
         static let warningSoft = Color(light: 0xFEF3C7, dark: 0x332810)
@@ -45,15 +46,44 @@ enum Theme {
     }
 
     enum Radius {
+        /// Top corners of full-width feed posts.
+        static let post: CGFloat = 32
         static let card: CGFloat = 20
         static let control: CGFloat = 14
         static let small: CGFloat = 10
     }
 }
 
+/// Each category has a soft background and a deep tone. Colour lives in imagery and icons
+/// (covers, story rings, pins, chip icons); text stays ink so contrast is never at risk.
 extension ActivityCategory {
-    var tint: Color { Theme.Palette.ink }
-    var softTint: Color { Theme.Palette.surfaceMuted }
+    var tint: Color {
+        switch self {
+        case .music: Color(light: 0x6D4AFF, dark: 0xA893FF)
+        case .sports: Color(light: 0x12A150, dark: 0x4ADE80)
+        case .learning: Color(light: 0x2F6BFF, dark: 0x7AA5FF)
+        case .technology: Color(light: 0x3B4A63, dark: 0x9FB0CC)
+        case .food: Color(light: 0xE8730C, dark: 0xFFA05C)
+        case .arts: Color(light: 0xE0287D, dark: 0xFF6FB0)
+        case .outdoors: Color(light: 0x2F7D4F, dark: 0x6CC28C)
+        case .games: Color(light: 0xC28A00, dark: 0xF2C64B)
+        case .other: Color(light: 0x5F6068, dark: 0xA5A6AE)
+        }
+    }
+
+    var softTint: Color {
+        switch self {
+        case .music: Color(light: 0xEEE9FF, dark: 0x231C3D)
+        case .sports: Color(light: 0xE3F6E9, dark: 0x14291C)
+        case .learning: Color(light: 0xE6EEFF, dark: 0x15213D)
+        case .technology: Color(light: 0xECEFF4, dark: 0x1E222B)
+        case .food: Color(light: 0xFFEEDF, dark: 0x33220F)
+        case .arts: Color(light: 0xFFE7F2, dark: 0x36182A)
+        case .outdoors: Color(light: 0xE7F2EA, dark: 0x172A1E)
+        case .games: Color(light: 0xFFF5D6, dark: 0x2E2610)
+        case .other: Color(light: 0xF0F0F2, dark: 0x222226)
+        }
+    }
 }
 
 extension Color {

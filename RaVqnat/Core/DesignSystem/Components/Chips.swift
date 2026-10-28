@@ -11,7 +11,10 @@ struct FilterChip: View {
     var body: some View {
         Button(action: action) {
             HStack(spacing: 6) {
-                if let symbol { Image(systemName: symbol).font(.footnote.weight(.semibold)) }
+                if let symbol {
+                    Image(systemName: symbol).font(.footnote.weight(.semibold))
+                        .foregroundStyle(isSelected ? Theme.Palette.canvas : tint)
+                }
                 Text(title).lineLimit(1)
             }
             .font(.subheadline.weight(.semibold))
@@ -33,7 +36,11 @@ struct CategoryTag: View {
     var onDark = false
 
     var body: some View {
-        Label(category.title, systemImage: category.symbol)
+        Label {
+            Text(category.title)
+        } icon: {
+            Image(systemName: category.symbol).foregroundStyle(category.tint)
+        }
             .font(.caption.weight(.semibold))
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
@@ -49,10 +56,11 @@ struct StatusPill: View {
     var tint: Color = Theme.Palette.ink
     var background: Color = Theme.Palette.surfaceMuted
     var inverted = false
+    var symbolTint: Color?
 
     var body: some View {
         HStack(spacing: 4) {
-            if let symbol { Image(systemName: symbol).font(.caption2.weight(.bold)) }
+            if let symbol { Image(systemName: symbol).font(.caption2.weight(.bold)).foregroundStyle(symbolTint ?? (inverted ? Theme.Palette.canvas : tint)) }
             Text(text)
         }
         .font(.caption.weight(.semibold))

@@ -79,7 +79,8 @@ struct FilterSheet: View {
         FilterSection(title: "filter.section.category", subtitle: "filter.section.category.subtitle") {
             FlowLayout(spacing: Theme.Spacing.s) {
                 ForEach(ActivityCategory.allCases) { category in
-                    FilterChip(title: category.title, symbol: category.symbol, isSelected: filters.categories.contains(category)) {
+                    FilterChip(title: category.title, symbol: category.symbol, tint: category.tint,
+                               isSelected: filters.categories.contains(category)) {
                         if filters.categories.contains(category) { filters.categories.remove(category) } else { filters.categories.insert(category) }
                     }
                     .accessibilityIdentifier("filter.category.\(category.rawValue)")

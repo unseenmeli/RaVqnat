@@ -4,9 +4,12 @@ Closer to Instagram / TikTok / Threads than to a "designed" app: the content is 
 
 ## Principles
 - **Monochrome UI.** Pure white / true black canvas, soft grey surfaces, near-black ink.
-- **One accent, used tiny.** Pink (`accent`, #FF2E9A) is reserved for small signals only:
-  the verified check, unread dots, the active-filter dot, the wordmark dot and event times
-  (`accentText`, AA-safe). Never for large fills or buttons.
+- **Brand pink is a signature, not a theme.** Pink (`accent`, #FF2E9A) marks the wordmark dot,
+  unread badges and the active-filter dot. Never large fills or buttons.
+- **Colour lives in imagery.** Each category has a soft background and a deep tone
+  (`ActivityCategory.softTint` / `.tint`) used for covers, story rings, map pins, chat icons,
+  welcome chips and chip icons. Text always stays ink, so contrast is never at risk.
+- **Trust is blue.** The verified badge uses `trust` (#2F6BFF), distinct from the brand.
 - **System type, tight and bold.** SF Pro throughout; large headings are bold with slightly
   negative tracking (`rvHero`). No serif or monospaced display faces.
 - **Capsules and soft corners.** Capsule buttons and chips, 20 pt continuous-corner cards,
@@ -25,6 +28,20 @@ Closer to Instagram / TikTok / Threads than to a "designed" app: the content is 
 | ink | #0A0A0A | #FAFAFA |
 | inkSecondary | #6B6B70 | #9A9AA0 |
 | accent | #FF2E9A | #FF4FAE |
+| trust | #2F6BFF | #6FA0FF |
+
+Category tones (light, deep / soft): music #6D4AFF / #EEE9FF · sports #12A150 / #E3F6E9 ·
+learning #2F6BFF / #E6EEFF · tech #3B4A63 / #ECEFF4 · food #E8730C / #FFEEDF ·
+arts #E0287D / #FFE7F2 · outdoors #2F7D4F / #E7F2EA · games #C28A00 / #FFF5D6 · other #5F6068 / #F0F0F2.
+
+## Feed posts
+Full-bleed: the cover spans the screen width with 32 pt continuous top corners and a straight
+bottom edge; text below keeps the 20 pt screen margin.
+
+## Tab bar icons
+Custom icons are template images in Assets.xcassets named `tab-explore`, `tab-map`,
+`tab-create`, `tab-chats` (plus optional `-selected` variants). Missing assets fall back to
+SF Symbols.
 
 ## Components
 `PrimaryButtonStyle` (ink capsule), `SecondaryButtonStyle` (grey capsule), `PillButtonStyle`,

@@ -139,7 +139,7 @@ struct ExploreView: View {
     private func feed(_ model: ExploreViewModel) -> some View {
         switch model.state {
         case .idle, .loading:
-            ForEach(0..<3, id: \.self) { _ in ActivityCardSkeleton().padding(.horizontal, Theme.Spacing.screen) }
+            ForEach(0..<3, id: \.self) { _ in ActivityCardSkeleton() }
         case .failed(let error):
             ErrorStateView(error: error) { Task { await model.load() } }
         case .loaded(let items) where items.isEmpty:
@@ -161,7 +161,6 @@ struct ExploreView: View {
                 }
                 .buttonStyle(.plain)
                 .accessibilityIdentifier("activity.card.\(activity.id.uuidString)")
-                .padding(.horizontal, Theme.Spacing.screen)
                 .task { await model.loadMoreIfNeeded(current: activity) }
             }
             if model.isLoadingMore {

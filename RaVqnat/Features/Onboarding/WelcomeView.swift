@@ -6,15 +6,15 @@ struct WelcomeView: View {
     @Environment(AppEnvironment.self) private var env
     @Environment(\.colorScheme) private var colorScheme
 
-    private static let examples: [(LocalizedStringKey, String)] = [
-        ("welcome.example.guitar", "music.note"),
-        ("welcome.example.basketball", "basketball.fill"),
-        ("welcome.example.coffee", "cup.and.saucer.fill"),
-        ("welcome.example.chess", "checkerboard.rectangle"),
-        ("welcome.example.photo", "camera.fill"),
-        ("welcome.example.hike", "mountain.2.fill"),
-        ("welcome.example.english", "character.bubble.fill"),
-        ("welcome.example.games", "dice.fill"),
+    private static let examples: [(LocalizedStringKey, String, ActivityCategory)] = [
+        ("welcome.example.guitar", "music.note", .music),
+        ("welcome.example.basketball", "basketball.fill", .sports),
+        ("welcome.example.coffee", "cup.and.saucer.fill", .food),
+        ("welcome.example.chess", "checkerboard.rectangle", .games),
+        ("welcome.example.photo", "camera.fill", .arts),
+        ("welcome.example.hike", "mountain.2.fill", .outdoors),
+        ("welcome.example.english", "character.bubble.fill", .learning),
+        ("welcome.example.games", "dice.fill", .games),
     ]
 
     var body: some View {
@@ -103,7 +103,7 @@ struct Wordmark: View {
 
 /// A row of example chips drifting horizontally. Static under Reduce Motion.
 private struct Marquee: View {
-    let items: [(LocalizedStringKey, String)]
+    let items: [(LocalizedStringKey, String, ActivityCategory)]
     /// Points per second; negative drifts the other way.
     let speed: Double
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -136,13 +136,12 @@ private struct Marquee: View {
         HStack(spacing: Theme.Spacing.s) {
             ForEach(Array(items.enumerated()), id: \.offset) { _, item in
                 HStack(spacing: Theme.Spacing.s) {
-                    Image(systemName: item.1).font(.subheadline.weight(.semibold))
-                    Text(item.0).font(.subheadline.weight(.semibold))
+                    Image(systemName: item.1).font(.subheadline.weight(.semibold)).foregroundStyle(item.2.tint)
+                    Text(item.0).font(.subheadline.weight(.semibold)).foregroundStyle(Theme.Palette.ink)
                 }
-                .foregroundStyle(Theme.Palette.ink)
                 .padding(.horizontal, Theme.Spacing.l)
                 .frame(height: 48)
-                .background(Theme.Palette.surfaceMuted, in: Capsule())
+                .background(item.2.softTint, in: Capsule())
                 .fixedSize()
             }
         }

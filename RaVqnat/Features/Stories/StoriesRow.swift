@@ -45,7 +45,7 @@ private struct StoryBubble: View {
         VStack(spacing: 6) {
             ZStack {
                 Circle()
-                    .strokeBorder(group.hasUnseen ? Theme.Palette.accent : Theme.Palette.surfaceStrong,
+                    .strokeBorder(group.hasUnseen ? group.category.tint : Theme.Palette.surfaceStrong,
                                   lineWidth: group.hasUnseen ? 2.5 : 1.5)
                 ActivityCoverArt(category: group.category, seed: group.activityID, imageURL: group.coverImageURL)
                     .frame(width: 62, height: 62)

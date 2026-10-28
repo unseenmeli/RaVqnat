@@ -47,7 +47,7 @@ private struct ThreadRow: View {
                 .font(.title3.weight(.semibold))
                 .foregroundStyle(thread.category.tint)
                 .frame(width: 52, height: 52)
-                .background(Theme.Palette.surfaceMuted, in: Circle())
+                .background(thread.category.softTint, in: Circle())
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 3) {
                 HStack {

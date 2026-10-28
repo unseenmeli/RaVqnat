@@ -194,8 +194,8 @@ private struct CategoryTile: View {
                 Text(category.title).font(.caption.weight(.semibold)).lineLimit(1).minimumScaleFactor(0.8)
             }
             .frame(maxWidth: .infinity, minHeight: 68)
-            .foregroundStyle(isSelected ? .white : category.tint)
-            .background(isSelected ? category.tint : category.softTint, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .foregroundStyle(isSelected ? Theme.Palette.canvas : category.tint)
+            .background(isSelected ? Theme.Palette.ink : category.softTint, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
         }
         .buttonStyle(.plain)
         .accessibilityAddTraits(isSelected ? .isSelected : [])
