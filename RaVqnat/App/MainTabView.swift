@@ -44,28 +44,34 @@ struct MainTabView: View {
     }
 }
 
-/// Floating tab bar: the four main destinations share one capsule with a sliding selection pill,
-/// and the create ("+") button sits on its own at the far right.
+/// Floating tab bar: Home, Map, Messages and Profile share one capsule; the create ("+") button
+/// sits on its own at the far right.
 ///
-/// Press and hold the current tab, then drag sideways: the pill follows your finger and switches
-/// pages as it passes each icon (with a selection tick), snapping into place on release.
+/// The current page shows its icon and name inside a pill. Press and hold the current page,
+/// then drag sideways to scrub: labels tuck away, the pill follows your finger and pages switch
+/// as it crosses each icon (with a selection tick), and it settles with the label on release.
 /// Plain taps work as usual, and every item stays an ordinary button for VoiceOver.
 private struct RVTabBar: View {
     @Binding var selection: AppTab
     let unreadCount: Int
     @Environment(AppSession.self) private var session
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Namespace private var pillNamespace
 
     private let tabs: [AppTab] = [.explore, .map, .chats, .profile]
     private let barHeight: CGFloat = 62
     private let inset: CGFloat = 6
+    private static let space = "rv.tabbar"
 
     @State private var barWidth: CGFloat = 0
+    @State private var itemFrames: [AppTab: CGRect] = [:]
     /// Finger position inside the capsule while scrubbing; nil when not dragging.
     @State private var scrubX: CGFloat?
 
-    private var itemWidth: CGFloat { barWidth > 0 ? (barWidth - inset * 2) / CGFloat(tabs.count) : 0 }
-    private var selectedIndex: Int? { tabs.firstIndex(of: selection) }
+    private var isScrubbing: Bool { scrubX != nil }
+    /// While scrubbing every item is the same width, so position maps directly to a tab.
+    private var equalItemWidth: CGFloat { barWidth > 0 ? (barWidth - inset * 2) / CGFloat(tabs.count) : 0 }
+    private var animation: Animation? { reduceMotion ? nil : .spring(duration: 0.32, bounce: 0.18) }
 
     var body: some View {
         HStack(spacing: Theme.Spacing.m) {
@@ -82,96 +88,98 @@ private struct RVTabBar: View {
 
     private var capsule: some View {
         ZStack(alignment: .leading) {
-            if itemWidth > 0, let pillX = pillOffset {
+            if isScrubbing, let scrubX, equalItemWidth > 0 {
                 Capsule()
                     .fill(Theme.Palette.surfaceStrong)
-                    .frame(width: itemWidth, height: barHeight - inset * 2)
-                    .scaleEffect(scrubX == nil ? 1 : 1.08)
-                    .offset(x: pillX)
-                    .animation(reduceMotion ? nil : .spring(duration: 0.3, bounce: 0.2), value: pillX)
-                    .animation(reduceMotion ? nil : .spring(duration: 0.25), value: scrubX == nil)
-                    .padding(.leading, inset)
+                    .frame(width: equalItemWidth, height: barHeight - inset * 2)
+                    .scaleEffect(1.06)
+                    .offset(x: min(max(scrubX - inset - equalItemWidth / 2, 0), equalItemWidth * CGFloat(tabs.count - 1)) + inset)
             }
             HStack(spacing: 0) {
-                ForEach(tabs, id: \.self) { tab in
-                    tabButton(tab)
-                }
+                ForEach(tabs, id: \.self) { tab in tabButton(tab) }
             }
             .padding(.horizontal, inset)
         }
         .frame(height: barHeight)
+        .coordinateSpace(.named(Self.space))
         .background(.regularMaterial, in: Capsule())
         .overlay(Capsule().strokeBorder(Theme.Palette.hairline, lineWidth: 0.5))
         .shadow(color: .black.opacity(0.12), radius: 18, y: 8)
-        .background(GeometryReader { proxy in
-            Color.clear
-                .onAppear { barWidth = proxy.size.width }
-                .onChange(of: proxy.size.width) { _, width in barWidth = width }
-        })
+        .onGeometryChange(for: CGFloat.self, of: { $0.size.width }) { barWidth = $0 }
         .simultaneousGesture(scrubGesture)
-    }
-
-    /// Where the selection pill sits: under the finger while scrubbing, otherwise on the selected tab.
-    private var pillOffset: CGFloat? {
-        if let scrubX {
-            return min(max(scrubX - inset - itemWidth / 2, 0), itemWidth * CGFloat(tabs.count - 1))
-        }
-        return selectedIndex.map { CGFloat($0) * itemWidth }
+        .animation(animation, value: selection)
+        .animation(animation, value: isScrubbing)
     }
 
     private var scrubGesture: some Gesture {
         LongPressGesture(minimumDuration: 0.25)
-            .sequenced(before: DragGesture(minimumDistance: 0))
+            .sequenced(before: DragGesture(minimumDistance: 0, coordinateSpace: .named(Self.space)))
             .onChanged { value in
                 guard case .second(true, let drag?) = value else { return }
-                // Only the tab you are on can be picked up.
+                // Only the page you are on can be picked up.
                 if scrubX == nil {
-                    guard index(at: drag.startLocation.x) == selectedIndex else { return }
+                    guard itemFrames[selection]?.insetBy(dx: -4, dy: -12).contains(drag.startLocation) == true else { return }
                 }
                 scrubX = drag.location.x
-                if let index = index(at: drag.location.x), tabs[index] != selection {
-                    selection = tabs[index]
-                }
+                guard equalItemWidth > 0 else { return }
+                let index = min(max(Int((drag.location.x - inset) / equalItemWidth), 0), tabs.count - 1)
+                if tabs[index] != selection { selection = tabs[index] }
             }
             .onEnded { _ in scrubX = nil }
     }
 
-    private func index(at x: CGFloat) -> Int? {
-        guard itemWidth > 0 else { return nil }
-        return min(max(Int((x - inset) / itemWidth), 0), tabs.count - 1)
-    }
-
     @ViewBuilder private func tabButton(_ tab: AppTab) -> some View {
         let isSelected = selection == tab
+        let showsLabel = isSelected && !isScrubbing
         Button { selection = tab } label: {
-            Group {
-                switch tab {
-                case .explore: TabIcon(asset: "tab-explore", symbol: "house", isSelected: isSelected)
-                case .map: TabIcon(asset: "tab-map", symbol: "map", isSelected: isSelected)
-                case .chats:
-                    TabIcon(asset: "tab-chats", symbol: "bubble.left.and.bubble.right", isSelected: isSelected)
-                        .overlay(alignment: .topTrailing) {
-                            if unreadCount > 0 {
-                                Circle().fill(Theme.Palette.accent).frame(width: 9, height: 9)
-                                    .overlay(Circle().stroke(Theme.Palette.canvas, lineWidth: 2))
-                                    .offset(x: 4, y: -2)
-                            }
-                        }
-                default:
-                    AvatarView(name: session.profile?.displayName ?? "", url: session.profile?.avatarURL, size: 28)
-                        .overlay(Circle().stroke(isSelected ? Theme.Palette.ink : .clear, lineWidth: 1.5))
+            HStack(spacing: 7) {
+                icon(for: tab, isSelected: isSelected)
+                if showsLabel {
+                    Text(tab.titleKey)
+                        .font(.subheadline.weight(.semibold))
+                        .lineLimit(1)
+                        .fixedSize()
+                        .transition(.opacity.combined(with: .scale(scale: 0.8, anchor: .leading)))
                 }
             }
             .foregroundStyle(isSelected ? Theme.Palette.ink : Theme.Palette.inkSecondary)
-            .frame(maxWidth: .infinity)
+            .padding(.horizontal, showsLabel ? Theme.Spacing.l : 0)
+            .frame(height: barHeight - inset * 2)
+            .frame(maxWidth: showsLabel ? nil : .infinity)
+            .background {
+                if showsLabel {
+                    Capsule().fill(Theme.Palette.surfaceStrong)
+                        .matchedGeometryEffect(id: "pill", in: pillNamespace)
+                }
+            }
             .frame(height: barHeight)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .onGeometryChange(for: CGRect.self, of: { $0.frame(in: .named(Self.space)) }) { itemFrames[tab] = $0 }
         .accessibilityLabel(Text(tab.titleKey))
         .accessibilityValue(tab == .chats && unreadCount > 0 ? Text("chats.unread \(unreadCount)") : Text(verbatim: ""))
         .accessibilityAddTraits(isSelected ? [.isSelected, .isButton] : .isButton)
         .accessibilityIdentifier("tab.\(tab.rawValue)")
+    }
+
+    @ViewBuilder private func icon(for tab: AppTab, isSelected: Bool) -> some View {
+        switch tab {
+        case .explore: TabIcon(asset: "tab-explore", symbol: "square.grid.2x2", isSelected: isSelected, size: 22)
+        case .map: TabIcon(asset: "tab-map", symbol: "location", isSelected: isSelected, size: 21)
+        case .chats:
+            TabIcon(asset: "tab-chats", symbol: "message", isSelected: isSelected, size: 22)
+                .overlay(alignment: .topTrailing) {
+                    if unreadCount > 0 {
+                        Circle().fill(Theme.Palette.accent).frame(width: 9, height: 9)
+                            .overlay(Circle().stroke(Theme.Palette.canvas, lineWidth: 2))
+                            .offset(x: 4, y: -2)
+                    }
+                }
+        default:
+            AvatarView(name: session.profile?.displayName ?? "", url: session.profile?.avatarURL, size: 26)
+                .overlay(Circle().stroke(isSelected ? Theme.Palette.ink : .clear, lineWidth: 1.5))
+        }
     }
 
     // MARK: Create
@@ -226,7 +234,7 @@ private struct TabIcon: View {
                 .scaledToFit()
                 .frame(width: size, height: size)
         } else {
-            Image(systemName: isSelected && filledVariant ? "\(symbol).fill" : symbol)
+            Image(systemName: isSelected && filledVariant && UIImage(systemName: "\(symbol).fill") != nil ? "\(symbol).fill" : symbol)
                 .font(.system(size: size * 0.92, weight: isSelected ? .semibold : .regular))
         }
     }

@@ -14,8 +14,9 @@ Closer to Instagram / TikTok / Threads than to a "designed" app: the content is 
   negative tracking (`rvHero`). No serif or monospaced display faces.
 - **Capsules and soft corners.** Capsule buttons and chips, 20 pt continuous-corner cards,
   no borders, no hard shadows. Elevation only where something floats (map pins, toasts).
-- **Custom chrome.** A floating tab bar: Explore, Map, Chats and Profile (avatar) share one
-  frosted capsule with a sliding selection pill; the round ink "+" (host/create) sits on its
+- **Custom chrome.** A floating tab bar: Home (grid), Map (location arrow), Messages (bubble)
+  and Profile (avatar) share one frosted capsule. The current page widens into a pill showing
+  its icon and name; the others are outline icons; the round ink "+" (host/create) sits on its
   own at the far right. Hold the current tab and drag sideways to scrub between pages (live
   switching with selection haptics, snaps on release). Hidden on pushed screens. Wordmark + round icon buttons as the Explore top bar;
   floating round back/share/more buttons over the activity cover.

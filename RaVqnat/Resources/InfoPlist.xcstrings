@@ -1,52 +1,40 @@
 {
-  "sourceLanguage" : "en",
-  "strings" : {
-    "CFBundleDisplayName" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "RaVqnat"
+  "sourceLanguage": "en",
+  "strings": {
+    "CFBundleDisplayName": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RaVqnat"
           }
         },
-        "ka" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "რავქნათ"
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "რავქნათ"
           }
         }
       }
     },
-    "CFBundleName" : {
-      "comment" : "Bundle name",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "RaVqnat"
-          }
-        }
-      }
-    },
-    "NSLocationWhenInUseUsageDescription" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "RaVqnat uses your location only while you use the app, to show activities near you. Your location is never shared with other people."
+    "NSLocationWhenInUseUsageDescription": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RaVqnat uses your location only while you use the app, to show activities near you. Your location is never shared with other people."
           }
         },
-        "ka" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "RaVqnat შენს მდებარეობას მხოლოდ აპის გამოყენებისას იყენებს, ახლომდებარე აქტივობების საჩვენებლად. შენი მდებარეობა არავის ეზიარება."
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RaVqnat შენს მდებარეობას მხოლოდ აპის გამოყენებისას იყენებს, ახლომდებარე აქტივობების საჩვენებლად. შენი მდებარეობა არავის ეზიარება."
           }
         }
       }
     }
   },
-  "version" : "1.0"
+  "version": "1.0"
 }

@@ -18,10 +18,10 @@ STRINGS = {
     "action.try_again": ("Try again", "ხელახლა ცდა"),
 
     # Tabs
-    "tab.explore": ("Explore", "აღმოაჩინე"),
+    "tab.explore": ("Home", "მთავარი"),
     "tab.map": ("Map", "რუკა"),
     "tab.host": ("Host", "მოაწყვე"),
-    "tab.chats": ("Chats", "ჩატები"),
+    "tab.chats": ("Messages", "ჩატები"),
     "tab.profile": ("Profile", "პროფილი"),
 
     # States
