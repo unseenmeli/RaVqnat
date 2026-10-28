@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Bordered tag that inverts to solid ink when selected.
+/// Capsule filter chip: soft grey, solid ink when selected.
 struct FilterChip: View {
     let title: String
     var symbol: String?
@@ -11,23 +11,15 @@ struct FilterChip: View {
     var body: some View {
         Button(action: action) {
             HStack(spacing: 6) {
-                if let symbol { Image(systemName: symbol).font(.caption.weight(.semibold)) }
+                if let symbol { Image(systemName: symbol).font(.footnote.weight(.semibold)) }
                 Text(title).lineLimit(1)
             }
-            .rvLabelStyle(.rvCaption.weight(.semibold))
-            .padding(.horizontal, Theme.Spacing.m)
-            .frame(minHeight: 36)
+            .font(.subheadline.weight(.semibold))
+            .padding(.horizontal, Theme.Spacing.l)
+            .frame(minHeight: 38)
             .foregroundStyle(isSelected ? Theme.Palette.canvas : Theme.Palette.ink)
-            .background(isSelected ? Theme.Palette.ink : Theme.Palette.surface, in: RoundedRectangle(cornerRadius: Theme.Radius.small))
-            .overlay(RoundedRectangle(cornerRadius: Theme.Radius.small)
-                .strokeBorder(Theme.Palette.ink.opacity(isSelected ? 1 : 0.85), lineWidth: Theme.Stroke.hairline))
-            .background {
-                if isSelected {
-                    RoundedRectangle(cornerRadius: Theme.Radius.small).fill(Theme.Palette.accent).offset(x: 3, y: 3)
-                }
-            }
-            .padding(.trailing, 3).padding(.bottom, 3)
-            .contentShape(Rectangle())
+            .background(isSelected ? Theme.Palette.ink : Theme.Palette.surfaceMuted, in: Capsule())
+            .contentShape(Capsule())
         }
         .buttonStyle(.plain)
         .accessibilityAddTraits(isSelected ? .isSelected : [])
@@ -35,25 +27,22 @@ struct FilterChip: View {
     }
 }
 
+/// Category label laid over cover images.
 struct CategoryTag: View {
     let category: ActivityCategory
     var onDark = false
 
     var body: some View {
-        HStack(spacing: 5) {
-            Image(systemName: category.symbol).font(.caption2.weight(.bold))
-            Text(category.title)
-        }
-        .rvLabelStyle(.rvCaption.weight(.bold))
-        .padding(.horizontal, Theme.Spacing.s)
-        .padding(.vertical, 5)
-        .foregroundStyle(Theme.Palette.ink)
-        .background(Theme.Palette.surface, in: RoundedRectangle(cornerRadius: Theme.Radius.small))
-        .overlay(RoundedRectangle(cornerRadius: Theme.Radius.small).strokeBorder(Theme.Palette.ink, lineWidth: Theme.Stroke.hairline))
+        Label(category.title, systemImage: category.symbol)
+            .font(.caption.weight(.semibold))
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
+            .foregroundStyle(Theme.Palette.ink)
+            .background(.thinMaterial, in: Capsule())
     }
 }
 
-/// Small monospaced status tag, e.g. "3 SPOTS LEFT", "REQUESTED".
+/// Small status capsule, e.g. "3 spots left", "Requested".
 struct StatusPill: View {
     let text: String
     var symbol: String?
@@ -66,11 +55,11 @@ struct StatusPill: View {
             if let symbol { Image(systemName: symbol).font(.caption2.weight(.bold)) }
             Text(text)
         }
-        .rvLabelStyle(.rvCaption.weight(.semibold))
-        .padding(.horizontal, Theme.Spacing.s)
-        .padding(.vertical, 5)
+        .font(.caption.weight(.semibold))
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
         .foregroundStyle(inverted ? Theme.Palette.canvas : tint)
-        .background(inverted ? Theme.Palette.ink : background, in: RoundedRectangle(cornerRadius: Theme.Radius.small))
+        .background(inverted ? Theme.Palette.ink : background, in: Capsule())
     }
 }
 

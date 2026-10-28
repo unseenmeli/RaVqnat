@@ -5668,6 +5668,22 @@
         }
       }
     },
+    "profile.get_verified": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Get verified"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ვერიფიკაცია"
+          }
+        }
+      }
+    },
     "profile.hosted": {
       "localizations": {
         "en": {
@@ -5812,6 +5828,22 @@
         }
       }
     },
+    "profile.stat.joined": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Joined"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "შეერთებული"
+          }
+        }
+      }
+    },
     "profile.stat.member_since": {
       "localizations": {
         "en": {
@@ -5824,6 +5856,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "წევრია"
+          }
+        }
+      }
+    },
+    "profile.stat.upcoming": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Upcoming"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "მომავალი"
+          }
+        }
+      }
+    },
+    "profile.upcoming.empty": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No upcoming activities."
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "მომავალი აქტივობები არ არის."
           }
         }
       }
@@ -6540,6 +6604,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "უთხარი მეგობარს, სად მიდიხარ. გამოიყენე „გაუზიარე სანდო ადამიანს“."
+          }
+        }
+      }
+    },
+    "settings.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Settings"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "პარამეტრები"
           }
         }
       }
@@ -7516,13 +7596,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Shall we? Try the demo"
+            "value": "Try the demo"
           }
         },
         "ka": {
           "stringUnit": {
             "state": "translated",
-            "value": "აბა? დემოს ნახვა"
+            "value": "დემოს ნახვა"
           }
         }
       }
@@ -7591,6 +7671,38 @@
         }
       }
     },
+    "welcome.example.english": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "English conversation"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ინგლისურად საუბარი"
+          }
+        }
+      }
+    },
+    "welcome.example.games": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Board game night"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "სამაგიდო თამაშების საღამო"
+          }
+        }
+      }
+    },
     "welcome.example.guitar": {
       "localizations": {
         "en": {
@@ -7607,18 +7719,34 @@
         }
       }
     },
-    "welcome.kicker": {
+    "welcome.example.hike": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tbilisi · 18+"
+            "value": "Hike to Turtle Lake"
           }
         },
         "ka": {
           "stringUnit": {
             "state": "translated",
-            "value": "თბილისი · 18+"
+            "value": "ლაშქრობა კუს ტბამდე"
+          }
+        }
+      }
+    },
+    "welcome.example.photo": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Photo walk in Old Tbilisi"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ფოტოსეირნობა ძველ თბილისში"
           }
         }
       }

@@ -120,8 +120,7 @@ private struct ChatThreadContent: View {
                         .lineLimit(1...5)
                         .padding(.horizontal, Theme.Spacing.m)
                         .padding(.vertical, 10)
-                        .background(Theme.Palette.surface, in: RoundedRectangle(cornerRadius: Theme.Radius.control))
-                        .overlay(RoundedRectangle(cornerRadius: Theme.Radius.control).strokeBorder(Theme.Palette.ink, lineWidth: Theme.Stroke.hairline))
+                        .background(Theme.Palette.surfaceMuted, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
                         .focused($composerFocused)
                         .accessibilityIdentifier("chat.composer")
                     Button {
@@ -132,8 +131,7 @@ private struct ChatThreadContent: View {
                             .font(.headline.weight(.bold))
                             .foregroundStyle(Theme.Palette.canvas)
                             .frame(width: 40, height: 40)
-                            .background(model.canSend ? Theme.Palette.ink : Theme.Palette.inkTertiary, in: Rectangle())
-                            .background(Rectangle().fill(model.canSend ? Theme.Palette.accent : .clear).offset(x: 3, y: 3))
+                            .background(model.canSend ? Theme.Palette.ink : Theme.Palette.surfaceStrong, in: Circle())
                     }
                     .disabled(!model.canSend)
                     .accessibilityLabel(Text("chat.send"))
@@ -184,7 +182,7 @@ private struct MessageBubble: View {
                 if showsSender && !isMine {
                     HStack(spacing: 4) {
                         Text(item.message.sender.displayName).font(.caption.weight(.semibold))
-                        if isHost { Text("chat.host_tag").rvLabelStyle(.caption2.monospaced().weight(.bold)).foregroundStyle(Theme.Palette.accentText) }
+                        if isHost { Text("chat.host_tag").font(.caption2.weight(.bold)).foregroundStyle(Theme.Palette.accentText) }
                     }
                     .foregroundStyle(Theme.Palette.inkSecondary)
                 }
@@ -192,10 +190,8 @@ private struct MessageBubble: View {
                     .foregroundStyle(isMine ? Theme.Palette.canvas : Theme.Palette.ink)
                     .padding(.horizontal, 14)
                     .padding(.vertical, 9)
-                    .background(isMine ? Theme.Palette.ink : Theme.Palette.surface,
-                                in: RoundedRectangle(cornerRadius: Theme.Radius.control))
-                    .overlay(RoundedRectangle(cornerRadius: Theme.Radius.control)
-                        .strokeBorder(Theme.Palette.ink, lineWidth: isMine ? 0 : Theme.Stroke.hairline))
+                    .background(isMine ? Theme.Palette.ink : Theme.Palette.surfaceMuted,
+                                in: RoundedRectangle(cornerRadius: 20, style: .continuous))
                     .opacity(item.delivery == .sending ? 0.6 : 1)
                 HStack(spacing: 4) {
                     if item.delivery == .failed {

@@ -56,7 +56,7 @@ private struct ActivityDetailContent: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
                 ActivityCoverArt(category: activity.category, seed: activity.id, imageURL: activity.coverImageURL)
-                    .frame(height: 220)
+                    .frame(height: 320)
                 VStack(alignment: .leading, spacing: Theme.Spacing.l) {
                     titleBlock(activity)
                     if activity.status == .cancelled { cancelledBanner }
@@ -73,8 +73,8 @@ private struct ActivityDetailContent: View {
         }
         .ignoresSafeArea(edges: .top)
         .safeAreaInset(edge: .bottom) { actionBar(activity) }
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar { toolbarMenu(activity) }
+        .toolbar(.hidden, for: .navigationBar)
+        .overlay(alignment: .top) { topBar(activity) }
         .refreshable { await model.load(viewerID: session.userID) }
         .sheet(isPresented: $showJoinSheet) { JoinRequestSheet(activity: activity) { note in
             showJoinSheet = false
@@ -117,11 +117,10 @@ private struct ActivityDetailContent: View {
             HStack {
                 CategoryTag(category: activity.category)
                 if activity.isBeginnerFriendly {
-                    StatusPill(text: activity.skillLevel.title, symbol: "leaf.fill", tint: Theme.Palette.success,
-                               background: Theme.Palette.success.opacity(0.12))
+                    StatusPill(text: activity.skillLevel.title, symbol: "leaf.fill")
                 }
             }
-            Text(activity.title).font(.rvTitle).foregroundStyle(Theme.Palette.ink).accessibilityAddTraits(.isHeader)
+            Text(activity.title).rvHero(size: 28).foregroundStyle(Theme.Palette.ink).accessibilityAddTraits(.isHeader)
         }
     }
 
@@ -289,27 +288,42 @@ private struct ActivityDetailContent: View {
         }
         .padding(.horizontal, Theme.Spacing.screen)
         .padding(.vertical, Theme.Spacing.m)
-        .background(.bar)
+        .background(Theme.Palette.canvas.ignoresSafeArea())
+        .overlay(alignment: .top) { Divider().overlay(Theme.Palette.hairline) }
     }
 
-    @ToolbarContentBuilder private func toolbarMenu(_ activity: Activity) -> some ToolbarContent {
-        ToolbarItem(placement: .topBarTrailing) {
-            Menu {
-                ShareLink(item: model.shareText()) { Label("detail.share_trusted", systemImage: "square.and.arrow.up") }
-                if !activity.isHost(session.userID) {
+    /// Floating round buttons over the cover, replacing the system navigation bar.
+    private func topBar(_ activity: Activity) -> some View {
+        HStack {
+            Button { dismiss() } label: { Image(systemName: "chevron.left") }
+                .buttonStyle(.iconOnMedia)
+                .accessibilityLabel(Text("action.back"))
+                .accessibilityIdentifier("detail.back")
+            Spacer()
+            ShareLink(item: model.shareText()) { Image(systemName: "square.and.arrow.up") }
+                .buttonStyle(.iconOnMedia)
+                .accessibilityLabel(Text("detail.share_trusted"))
+            if !activity.isHost(session.userID) {
+                Menu {
                     Button {
                         reportTarget = ReportTarget(userID: activity.host.id, userName: activity.host.displayName, activityID: activity.id)
                     } label: { Label("detail.report", systemImage: "flag") }
                     Button(role: .destructive) { showBlockConfirm = true } label: {
                         Label("detail.block_host", systemImage: "hand.raised.slash")
                     }
+                } label: {
+                    Image(systemName: "ellipsis")
+                        .font(.system(size: 17, weight: .semibold))
+                        .foregroundStyle(Theme.Palette.ink)
+                        .frame(width: 40, height: 40)
+                        .background(.regularMaterial, in: Circle())
                 }
-            } label: {
-                Image(systemName: "ellipsis").frame(width: 32, height: 32).background(.regularMaterial, in: Circle())
+                .accessibilityLabel(Text("detail.more"))
+                .accessibilityIdentifier("detail.more")
             }
-            .accessibilityLabel(Text("detail.more"))
-            .accessibilityIdentifier("detail.more")
         }
+        .padding(.horizontal, Theme.Spacing.l)
+        .padding(.top, Theme.Spacing.xs)
     }
 
     private func startJoin(_ activity: Activity) {

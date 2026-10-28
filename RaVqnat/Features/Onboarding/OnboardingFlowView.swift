@@ -40,7 +40,7 @@ private struct OnboardingContent: View {
                     stepContent
                 }
                 .padding(.horizontal, Theme.Spacing.screen)
-                .padding(.top, Theme.Spacing.xl)
+                .padding(.top, Theme.Spacing.l)
                 .padding(.bottom, Theme.Spacing.xl)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .id(model.step)
@@ -59,36 +59,28 @@ private struct OnboardingContent: View {
     }
 
     private var header: some View {
-        VStack(spacing: Theme.Spacing.m) {
-            HStack {
-                Button {
-                    model.back()
-                } label: {
-                    Text(verbatim: "← ") + Text("action.back")
-                }
-                .rvLabelStyle()
-                .foregroundStyle(Theme.Palette.ink)
-                .frame(minHeight: 44)
+        HStack(spacing: Theme.Spacing.m) {
+            Button { model.back() } label: { Image(systemName: "chevron.left") }
+                .buttonStyle(.icon)
                 .opacity(model.step == .name ? 0 : 1)
                 .disabled(model.step == .name)
-                Spacer()
-                Text(verbatim: String(format: "%02d / %02d", model.step.rawValue + 1, total))
-                    .font(.rvLabel)
-                    .foregroundStyle(Theme.Palette.ink)
-                    .accessibilityLabel(Text("onboarding.progress.value \(model.step.rawValue + 1) \(total)"))
-            }
-            HStack(spacing: 4) {
-                ForEach(0..<total, id: \.self) { index in
-                    Rectangle()
-                        .fill(index < model.step.rawValue ? Theme.Palette.ink
-                              : index == model.step.rawValue ? Theme.Palette.accent : Theme.Palette.hairline)
-                        .frame(height: 4)
+                .accessibilityLabel(Text("action.back"))
+            GeometryReader { proxy in
+                ZStack(alignment: .leading) {
+                    Capsule().fill(Theme.Palette.surfaceMuted)
+                    Capsule().fill(Theme.Palette.ink)
+                        .frame(width: proxy.size.width * model.progress)
                 }
             }
-            .accessibilityHidden(true)
+            .frame(height: 6)
+            .accessibilityElement()
+            .accessibilityLabel(Text("onboarding.progress"))
+            .accessibilityValue(Text("onboarding.progress.value \(model.step.rawValue + 1) \(total)"))
+            Color.clear.frame(width: 40, height: 40)
         }
         .padding(.horizontal, Theme.Spacing.screen)
         .padding(.top, Theme.Spacing.s)
+        .animation(reduceMotion ? nil : .spring(duration: 0.4), value: model.progress)
     }
 
     @ViewBuilder private var stepContent: some View {
@@ -96,26 +88,26 @@ private struct OnboardingContent: View {
         case .name:
             StepTitle(title: "onboarding.name.title", subtitle: "onboarding.name.subtitle")
             VStack(alignment: .leading, spacing: Theme.Spacing.s) {
-                TextField(text: $model.draft.displayName) {
-                    Text("onboarding.name.placeholder").foregroundStyle(Theme.Palette.inkTertiary)
-                }
-                .font(.system(size: 34, weight: .regular, design: .serif))
-                .textContentType(.givenName)
-                .focused($nameFocused)
-                .submitLabel(.next)
-                .onSubmit { advance() }
-                .onAppear { nameFocused = true }
-                .accessibilityIdentifier("onboarding.name")
-                Rectangle().fill(model.nameIssue == nil ? Theme.Palette.ink : Theme.Palette.danger).frame(height: Theme.Stroke.bold)
+                TextField(text: $model.draft.displayName) { Text("onboarding.name.placeholder") }
+                    .font(.title2.weight(.semibold))
+                    .textContentType(.givenName)
+                    .focused($nameFocused)
+                    .submitLabel(.next)
+                    .onSubmit { advance() }
+                    .onAppear { nameFocused = true }
+                    .padding(.horizontal, Theme.Spacing.l)
+                    .frame(height: 64)
+                    .background(Theme.Palette.surfaceMuted, in: RoundedRectangle(cornerRadius: Theme.Radius.control, style: .continuous))
+                    .accessibilityIdentifier("onboarding.name")
                 if let issue = model.nameIssue {
                     Text(issue.message).font(.footnote).foregroundStyle(Theme.Palette.danger)
                 }
             }
         case .age:
             StepTitle(title: "onboarding.age.title", subtitle: "onboarding.age.subtitle")
-            AgeCheckbox(isOn: $model.draft.confirmsAdult)
-            Text("onboarding.age.note")
-                .font(.system(.footnote, design: .monospaced))
+            AgeConfirmation(isOn: $model.draft.confirmsAdult)
+            Label("onboarding.age.note", systemImage: "info.circle")
+                .font(.footnote)
                 .foregroundStyle(Theme.Palette.inkSecondary)
         case .photo:
             StepTitle(title: "onboarding.photo.title", subtitle: "onboarding.photo.subtitle")
@@ -125,19 +117,15 @@ private struct OnboardingContent: View {
         case .interests:
             StepTitle(title: "onboarding.interests.title", subtitle: "onboarding.interests.subtitle")
             InterestPicker(selected: model.draft.interestIDs, toggle: model.toggleInterest)
-            Text(verbatim: "\(model.draft.interestIDs.count) / \(OnboardingValidator.maxInterests)")
-                .font(.rvCaption)
-                .foregroundStyle(Theme.Palette.inkTertiary)
         case .language:
             StepTitle(title: "onboarding.language.title", subtitle: "onboarding.language.subtitle")
-            EditorialList(items: AppLanguage.allCases.map { ($0.id, $0.displayName) },
-                          selected: model.draft.language.id) { id in
+            OptionList(items: AppLanguage.allCases.map { ($0.id, $0.displayName) }, selected: model.draft.language.id) { id in
                 if let language = AppLanguage(rawValue: id) { model.draft.language = language }
             }
         case .neighborhood:
             StepTitle(title: "onboarding.neighborhood.title", subtitle: "onboarding.neighborhood.subtitle")
-            EditorialList(items: Neighborhood.all.map { ($0.id, $0.name) }, selected: model.draft.neighborhoodID,
-                          identifierPrefix: "onboarding.neighborhood.") { id in
+            OptionList(items: Neighborhood.all.map { ($0.id, $0.name) }, selected: model.draft.neighborhoodID,
+                       identifierPrefix: "onboarding.neighborhood.") { id in
                 model.draft.neighborhoodID = id
             }
         }
@@ -148,10 +136,7 @@ private struct OnboardingContent: View {
             if model.isSubmitting {
                 ProgressView().tint(Theme.Palette.canvas)
             } else {
-                HStack {
-                    Text(model.isLastStep ? "onboarding.finish" : (model.step == .photo && model.photoData == nil ? "action.skip" : "action.continue"))
-                    Text(verbatim: "→")
-                }
+                Text(model.isLastStep ? "onboarding.finish" : (model.step == .photo && model.photoData == nil ? "action.skip" : "action.continue"))
             }
         }
         .buttonStyle(.primary)
@@ -159,7 +144,7 @@ private struct OnboardingContent: View {
         .accessibilityIdentifier("onboarding.continue")
         .padding(.horizontal, Theme.Spacing.screen)
         .padding(.vertical, Theme.Spacing.m)
-        .background(Theme.Palette.canvas.opacity(0.94).ignoresSafeArea())
+        .background(Theme.Palette.canvas.ignoresSafeArea())
     }
 
     private func advance() {
@@ -177,9 +162,9 @@ struct StepTitle: View {
     let subtitle: LocalizedStringKey
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.m) {
+        VStack(alignment: .leading, spacing: Theme.Spacing.s) {
             Text(title)
-                .rvHero(size: 40)
+                .rvHero(size: 32)
                 .foregroundStyle(Theme.Palette.ink)
                 .accessibilityAddTraits(.isHeader)
             Text(subtitle).font(.body).foregroundStyle(Theme.Palette.inkSecondary)
@@ -188,11 +173,11 @@ struct StepTitle: View {
     }
 }
 
-/// meli.sh-style list: numbered rows with a serif title, inverted to ink when selected.
-struct EditorialList: View {
+/// Grouped single-choice list with a check on the selected row.
+struct OptionList: View {
     let items: [(id: String, title: String)]
     let selected: String?
-    var identifierPrefix = "editorial."
+    var identifierPrefix = "option."
     let onSelect: (String) -> Void
 
     var body: some View {
@@ -200,54 +185,47 @@ struct EditorialList: View {
             ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
                 let isSelected = item.id == selected
                 Button { onSelect(item.id) } label: {
-                    HStack(spacing: Theme.Spacing.m) {
-                        Text(verbatim: String(format: "%02d", index + 1)).font(.rvCaption)
-                        Text(item.title).font(.system(.title2, design: .serif))
+                    HStack {
+                        Text(item.title).font(.body.weight(isSelected ? .semibold : .regular))
                         Spacer()
-                        if isSelected { Image(systemName: "checkmark").font(.body.weight(.bold)) }
+                        Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                            .font(.title3)
+                            .foregroundStyle(isSelected ? Theme.Palette.ink : Theme.Palette.surfaceStrong)
                     }
-                    .foregroundStyle(isSelected ? Theme.Palette.canvas : Theme.Palette.ink)
-                    .padding(.horizontal, Theme.Spacing.m)
-                    .padding(.vertical, 14)
-                    .background(isSelected ? Theme.Palette.ink : Theme.Palette.surface)
+                    .foregroundStyle(Theme.Palette.ink)
+                    .padding(.horizontal, Theme.Spacing.l)
+                    .frame(minHeight: 54)
                     .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
                 .accessibilityAddTraits(isSelected ? .isSelected : [])
                 .accessibilityIdentifier("\(identifierPrefix)\(item.id)")
                 if index < items.count - 1 {
-                    Rectangle().fill(Theme.Palette.ink).frame(height: Theme.Stroke.hairline)
+                    Divider().overlay(Theme.Palette.hairline).padding(.leading, Theme.Spacing.l)
                 }
             }
         }
-        .overlay(Rectangle().strokeBorder(Theme.Palette.ink, lineWidth: Theme.Stroke.bold))
-        .echoShadow(Theme.Palette.accent, offset: Theme.echoOffset, cornerRadius: 0)
+        .background(Theme.Palette.surfaceMuted, in: RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
         .sensoryFeedback(.selection, trigger: selected)
     }
 }
 
-private struct AgeCheckbox: View {
+private struct AgeConfirmation: View {
     @Binding var isOn: Bool
 
     var body: some View {
         Button { isOn.toggle() } label: {
-            HStack(alignment: .center, spacing: Theme.Spacing.l) {
-                ZStack {
-                    Rectangle().fill(isOn ? Theme.Palette.ink : Theme.Palette.surface)
-                    Rectangle().strokeBorder(Theme.Palette.ink, lineWidth: Theme.Stroke.bold)
-                    if isOn { Image(systemName: "checkmark").font(.title3.weight(.heavy)).foregroundStyle(Theme.Palette.canvas) }
-                }
-                .frame(width: 40, height: 40)
-                .echoShadow(isOn ? Theme.Palette.accent : .clear, offset: 3, cornerRadius: 0)
-                Text("onboarding.age.confirm")
-                    .rvLabelStyle(.system(.subheadline, design: .monospaced).weight(.bold))
-                    .foregroundStyle(Theme.Palette.ink)
+            HStack(spacing: Theme.Spacing.m) {
+                Image(systemName: isOn ? "checkmark.circle.fill" : "circle")
+                    .font(.title2)
+                    .foregroundStyle(isOn ? Theme.Palette.ink : Theme.Palette.inkTertiary)
+                    .contentTransition(.symbolEffect(.replace))
+                Text("onboarding.age.confirm").font(.body.weight(.semibold)).foregroundStyle(Theme.Palette.ink)
                     .multilineTextAlignment(.leading)
                 Spacer(minLength: 0)
             }
             .padding(Theme.Spacing.l)
-            .background(Theme.Palette.surface)
-            .overlay(Rectangle().strokeBorder(Theme.Palette.ink, lineWidth: Theme.Stroke.regular))
+            .background(Theme.Palette.surfaceMuted, in: RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
@@ -281,19 +259,15 @@ struct AvatarPicker: View {
     var body: some View {
         VStack(spacing: Theme.Spacing.m) {
             ZStack {
-                Circle().fill(Theme.Palette.accent.opacity(0.3)).frame(width: 140, height: 140).offset(x: -16)
-                Circle().fill(Theme.Palette.accent.opacity(0.85)).frame(width: 140, height: 140).offset(x: -8)
                 if let data, let image = UIImage(data: data) {
                     Image(uiImage: image).resizable().scaledToFill()
                         .frame(width: 140, height: 140).clipShape(Circle())
-                        .overlay(Circle().strokeBorder(Theme.Palette.ink, lineWidth: Theme.Stroke.bold))
                         .accessibilityHidden(true)
                 } else {
                     AvatarView(name: name, url: nil, size: 140)
                 }
                 if isProcessing { ProgressView() }
             }
-            .padding(.leading, 16)
             PhotosPicker(selection: $item, matching: .images, photoLibrary: .shared()) {
                 Label(data == nil ? "photo.choose" : "photo.change", systemImage: "photo.on.rectangle")
             }

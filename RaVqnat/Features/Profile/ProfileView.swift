@@ -5,95 +5,60 @@ struct ProfileView: View {
     @Environment(AppSession.self) private var session
     @State private var hosted: [Activity] = []
     @State private var joined: [Activity] = []
+    @State private var gridTab: ProfileGridTab = .joined
     @State private var showEdit = false
     @State private var showVerification = false
 
     var body: some View {
-        List {
+        ScrollView {
             if let profile = session.profile {
-                Section { header(profile) }
-                    .listRowBackground(Color.clear)
-                    .listRowInsets(EdgeInsets())
-
-                activitiesSection(title: "profile.joined", items: joined, empty: "profile.joined.empty")
-                activitiesSection(title: "profile.hosted", items: hosted, empty: "profile.hosted.empty")
-
-                Section("profile.section.account") {
-                    Button { showEdit = true } label: { Label("profile.edit", systemImage: "pencil") }
-                    Button { showVerification = true } label: {
-                        HStack {
-                            Label("profile.verification", systemImage: "checkmark.seal")
-                            Spacer()
-                            Text(profile.verification.isCurrentlyVerified() ? VerificationStatus.verified.title : profile.verification.status.title)
-                                .foregroundStyle(Theme.Palette.inkSecondary)
+                VStack(spacing: Theme.Spacing.l) {
+                    ProfileHeader(
+                        name: profile.displayName, avatarURL: profile.avatarURL, isVerified: profile.isVerified,
+                        neighborhoodID: profile.homeNeighborhoodID, bio: profile.bio, interestIDs: profile.interestIDs,
+                        stats: [
+                            (String(hosted.count), String(localized: "profile.stat.hosted")),
+                            (String(joined.filter { $0.myMembership?.occupiesSpot == true }.count), String(localized: "profile.stat.joined")),
+                            (String((hosted + joined).filter { !$0.hasEnded() && $0.status == .published }.count), String(localized: "profile.stat.upcoming")),
+                        ])
+                    HStack(spacing: Theme.Spacing.s) {
+                        Button("profile.edit") { showEdit = true }
+                            .buttonStyle(SecondaryButtonStyle(compact: true))
+                            .frame(maxWidth: .infinity)
+                            .accessibilityIdentifier("profile.edit")
+                        Button { showVerification = true } label: {
+                            Label(profile.isVerified ? String(localized: "verification.status.verified") : String(localized: "profile.get_verified"),
+                                  systemImage: profile.isVerified ? "checkmark.seal.fill" : "checkmark.seal")
                         }
+                        .buttonStyle(SecondaryButtonStyle(compact: true))
+                        .frame(maxWidth: .infinity)
                     }
-                    NavigationLink { NotificationSettingsView() } label: { Label("profile.notifications", systemImage: "bell") }
-                    Button {
-                        if let url = URL(string: UIApplication.openSettingsURLString) { UIApplication.shared.open(url) }
-                    } label: {
-                        HStack {
-                            Label("profile.app_language", systemImage: "globe")
-                            Spacer()
-                            Text(Locale.current.localizedString(forLanguageCode: Bundle.main.preferredLocalizations.first ?? "en") ?? "")
-                                .foregroundStyle(Theme.Palette.inkSecondary)
-                        }
-                    }
-                }
-                .foregroundStyle(Theme.Palette.ink)
+                    .padding(.horizontal, Theme.Spacing.screen)
 
-                Section("profile.section.safety") {
-                    NavigationLink(value: Route.safetyCenter) { Label("safety.center.title", systemImage: "shield.lefthalf.filled") }
+                    ProfileGrid(tab: $gridTab, tabs: [.joined, .hosted], items: gridTab == .hosted ? hosted : joined)
                 }
-
-                Section {
-                    Button("profile.sign_out") { Task { await session.signOut() } }
-                    NavigationLink { DeleteAccountView() } label: { Text("profile.delete").foregroundStyle(Theme.Palette.danger) }
-                } footer: {
-                    Text(verbatim: "RaVqnat \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "")\(env.config.isMockMode ? " · demo" : "")")
-                }
+                .padding(.top, Theme.Spacing.s)
             }
         }
-        .navigationTitle(Text("tab.profile"))
+        .screenBackground()
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                HStack(spacing: 4) {
+                    Text(session.profile?.displayName ?? "").font(.headline)
+                    if session.profile?.isVerified == true { VerifiedBadge(size: .caption) }
+                }
+            }
+            ToolbarItem(placement: .topBarTrailing) {
+                NavigationLink { SettingsView() } label: { Image(systemName: "line.3.horizontal") }
+                    .accessibilityLabel(Text("settings.title"))
+                    .accessibilityIdentifier("profile.settings")
+            }
+        }
+        .navigationBarTitleDisplayMode(.inline)
         .task { await load() }
         .refreshable { await session.refreshProfile(); await load() }
         .sheet(isPresented: $showEdit) { EditProfileView() }
         .sheet(isPresented: $showVerification) { VerificationView { Task { await session.refreshProfile() } } }
-    }
-
-    private func header(_ profile: MyProfile) -> some View {
-        VStack(spacing: Theme.Spacing.m) {
-            AvatarView(name: profile.displayName, url: profile.avatarURL, size: 96)
-            HStack(spacing: 6) {
-                Text(profile.displayName).font(.rvTitle).foregroundStyle(Theme.Palette.ink)
-                if profile.isVerified { VerifiedBadge(size: .title3) }
-            }
-            if !profile.bio.isEmpty {
-                Text(profile.bio).font(.subheadline).foregroundStyle(Theme.Palette.inkSecondary).multilineTextAlignment(.center)
-            }
-            if let hood = Neighborhood.find(profile.homeNeighborhoodID) {
-                Label(hood.name, systemImage: "mappin").font(.footnote).foregroundStyle(Theme.Palette.inkSecondary)
-            }
-            FlowLayout(spacing: 6) {
-                ForEach(profile.interestIDs.compactMap(Interest.find)) { interest in
-                    StatusPill(text: interest.title, symbol: interest.category.symbol, tint: interest.category.tint, background: interest.category.softTint)
-                }
-            }
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, Theme.Spacing.l)
-    }
-
-    @ViewBuilder
-    private func activitiesSection(title: LocalizedStringKey, items: [Activity], empty: LocalizedStringKey) -> some View {
-        Section(title) {
-            if items.isEmpty {
-                Text(empty).font(.subheadline).foregroundStyle(Theme.Palette.inkSecondary)
-            }
-            ForEach(items.prefix(5)) { activity in
-                NavigationLink(value: Route.activity(activity.id)) { ActivityRow(activity: activity) }
-            }
-        }
     }
 
     private func load() async {
@@ -101,6 +66,314 @@ struct ProfileView: View {
         async let joined = env.activities.joinedActivities()
         self.hosted = (try? await hosted) ?? []
         self.joined = (try? await joined) ?? []
+    }
+}
+
+/// Centred header shared by your own and other people's profiles (TikTok/Instagram layout).
+struct ProfileHeader: View {
+    let name: String
+    let avatarURL: URL?
+    let isVerified: Bool
+    let neighborhoodID: String?
+    let bio: String
+    let interestIDs: [String]
+    let stats: [(value: String, label: String)]
+
+    var body: some View {
+        VStack(spacing: Theme.Spacing.m) {
+            AvatarView(name: name, url: avatarURL, size: 96)
+            VStack(spacing: 4) {
+                HStack(spacing: 4) {
+                    Text(name).font(.title3.weight(.bold))
+                    if isVerified { VerifiedBadge(size: .subheadline) }
+                }
+                if let hood = Neighborhood.find(neighborhoodID) {
+                    Label(hood.name, systemImage: "mappin").font(.subheadline).foregroundStyle(Theme.Palette.inkSecondary)
+                }
+            }
+            HStack(spacing: 0) {
+                ForEach(Array(stats.enumerated()), id: \.offset) { index, stat in
+                    VStack(spacing: 2) {
+                        Text(stat.value).font(.headline.monospacedDigit())
+                        Text(stat.label).font(.footnote).foregroundStyle(Theme.Palette.inkSecondary)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .accessibilityElement(children: .combine)
+                    if index < stats.count - 1 {
+                        Rectangle().fill(Theme.Palette.hairline).frame(width: 1, height: 24)
+                    }
+                }
+            }
+            .padding(.horizontal, Theme.Spacing.xl)
+            if !bio.isEmpty {
+                Text(bio).font(.subheadline).multilineTextAlignment(.center)
+                    .padding(.horizontal, Theme.Spacing.xxl)
+            }
+            if !interestIDs.isEmpty {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 6) {
+                        ForEach(interestIDs.compactMap(Interest.find)) { interest in
+                            StatusPill(text: interest.title, symbol: interest.category.symbol)
+                        }
+                    }
+                    .padding(.horizontal, Theme.Spacing.screen)
+                }
+                .scrollBounceBehavior(.basedOnSize, axes: .horizontal)
+            }
+        }
+        .foregroundStyle(Theme.Palette.ink)
+    }
+}
+
+enum ProfileGridTab: Hashable {
+    case joined, hosted, upcoming
+
+    var symbol: String {
+        switch self {
+        case .joined: "ticket"
+        case .hosted: "star"
+        case .upcoming: "calendar"
+        }
+    }
+
+    var label: LocalizedStringKey {
+        switch self {
+        case .joined: "profile.joined"
+        case .hosted: "profile.hosted"
+        case .upcoming: "profile.upcoming_hosted"
+        }
+    }
+
+    var emptyMessage: String {
+        switch self {
+        case .joined: String(localized: "profile.joined.empty")
+        case .hosted: String(localized: "profile.hosted.empty")
+        case .upcoming: String(localized: "profile.upcoming.empty")
+        }
+    }
+}
+
+/// Icon tabs with an underline indicator above a 3-column grid of activity tiles.
+struct ProfileGrid: View {
+    @Binding var tab: ProfileGridTab
+    let tabs: [ProfileGridTab]
+    let items: [Activity]
+    @Namespace private var underline
+
+    var body: some View {
+        VStack(spacing: 2) {
+            HStack(spacing: 0) {
+                ForEach(tabs, id: \.self) { candidate in
+                    Button { withAnimation(.spring(duration: 0.3)) { tab = candidate } } label: {
+                        VStack(spacing: 10) {
+                            Image(systemName: tab == candidate ? "\(candidate.symbol).fill" : candidate.symbol)
+                                .font(.system(size: 20, weight: .semibold))
+                                .foregroundStyle(tab == candidate ? Theme.Palette.ink : Theme.Palette.inkTertiary)
+                            ZStack {
+                                Rectangle().fill(Color.clear).frame(height: 2)
+                                if tab == candidate {
+                                    Rectangle().fill(Theme.Palette.ink).frame(width: 44, height: 2)
+                                        .matchedGeometryEffect(id: "underline", in: underline)
+                                }
+                            }
+                        }
+                        .frame(maxWidth: .infinity)
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(Text(candidate.label))
+                    .accessibilityAddTraits(tab == candidate ? .isSelected : [])
+                }
+            }
+            .overlay(alignment: .bottom) { Divider().overlay(Theme.Palette.hairline) }
+            .sensoryFeedback(.selection, trigger: tab)
+
+            if items.isEmpty {
+                Text(tab.emptyMessage)
+                    .font(.subheadline)
+                    .foregroundStyle(Theme.Palette.inkSecondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.vertical, Theme.Spacing.xxl)
+                    .padding(.horizontal, Theme.Spacing.xl)
+            } else {
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 2), count: 3), spacing: 2) {
+                    ForEach(items) { activity in
+                        NavigationLink(value: Route.activity(activity.id)) { ActivityTile(activity: activity) }
+                            .buttonStyle(.plain)
+                    }
+                }
+            }
+        }
+    }
+}
+
+/// Portrait grid tile: cover with the date on top and the title at the bottom.
+private struct ActivityTile: View {
+    let activity: Activity
+
+    var body: some View {
+        Color.clear
+            .aspectRatio(3 / 4, contentMode: .fit)
+            .overlay {
+                ActivityCoverArt(category: activity.category, seed: activity.id, imageURL: activity.coverImageURL)
+            }
+            .overlay(alignment: .bottomLeading) {
+                Text(activity.title)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(Theme.Palette.ink)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.leading)
+                    .padding(8)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(.thinMaterial)
+            }
+            .overlay(alignment: .topLeading) {
+                HStack(spacing: 4) {
+                    if activity.status == .cancelled {
+                        Image(systemName: "xmark.circle.fill").foregroundStyle(Theme.Palette.danger)
+                    } else if activity.myMembership == .pending {
+                        Image(systemName: "clock.fill")
+                    }
+                    Text(activity.startsAt.formatted(.dateTime.day().month(.abbreviated)))
+                }
+                .font(.caption2.weight(.bold))
+                .foregroundStyle(Theme.Palette.ink)
+                .padding(.horizontal, 6).padding(.vertical, 3)
+                .background(.thinMaterial, in: Capsule())
+                .padding(6)
+            }
+            .clipped()
+            .opacity(activity.status == .cancelled || activity.hasEnded() ? 0.6 : 1)
+            .accessibilityElement(children: .combine)
+    }
+}
+
+struct SettingsView: View {
+    @Environment(AppEnvironment.self) private var env
+    @Environment(AppSession.self) private var session
+    @State private var showVerification = false
+
+    var body: some View {
+        List {
+            Section {
+                NavigationLink { NotificationSettingsView() } label: { Label("profile.notifications", systemImage: "bell") }
+                Button { showVerification = true } label: {
+                    HStack {
+                        Label("profile.verification", systemImage: "checkmark.seal")
+                        Spacer()
+                        Text(session.profile?.isVerified == true ? VerificationStatus.verified.title : (session.profile?.verification.status.title ?? ""))
+                            .foregroundStyle(Theme.Palette.inkSecondary)
+                    }
+                }
+                Button {
+                    if let url = URL(string: UIApplication.openSettingsURLString) { UIApplication.shared.open(url) }
+                } label: {
+                    HStack {
+                        Label("profile.app_language", systemImage: "globe")
+                        Spacer()
+                        Text(Locale.current.localizedString(forLanguageCode: Bundle.main.preferredLocalizations.first ?? "en") ?? "")
+                            .foregroundStyle(Theme.Palette.inkSecondary)
+                    }
+                }
+            } header: { Text("profile.section.account") }
+            .foregroundStyle(Theme.Palette.ink)
+
+            Section("profile.section.safety") {
+                NavigationLink(value: Route.safetyCenter) { Label("safety.center.title", systemImage: "shield.lefthalf.filled") }
+            }
+
+            Section {
+                Button("profile.sign_out") { Task { await session.signOut() } }
+                    .foregroundStyle(Theme.Palette.ink)
+                NavigationLink { DeleteAccountView() } label: { Text("profile.delete").foregroundStyle(Theme.Palette.danger) }
+            } footer: {
+                Text(verbatim: "RaVqnat \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "")\(env.config.isMockMode ? " · demo" : "")")
+            }
+        }
+        .navigationTitle(Text("settings.title"))
+        .navigationBarTitleDisplayMode(.inline)
+        .sheet(isPresented: $showVerification) { VerificationView { Task { await session.refreshProfile() } } }
+    }
+}
+
+/// Another person's profile. Shows only public information — never contact details.
+struct PublicProfileView: View {
+    let userID: UUID
+    @Environment(AppEnvironment.self) private var env
+    @Environment(\.dismiss) private var dismiss
+    @State private var state: LoadState<PublicProfile> = .idle
+    @State private var upcoming: [Activity] = []
+    @State private var gridTab: ProfileGridTab = .upcoming
+    @State private var reportTarget: ReportTarget?
+    @State private var showBlock = false
+    @State private var error: AppError?
+
+    var body: some View {
+        Group {
+            switch state {
+            case .idle, .loading: ProgressView().frame(maxWidth: .infinity, maxHeight: .infinity)
+            case .failed(let error): ErrorStateView(error: error) { Task { await load() } }
+            case .loaded(let profile): content(profile)
+            }
+        }
+        .screenBackground()
+        .navigationBarTitleDisplayMode(.inline)
+        .task { await load() }
+        .sheet(item: $reportTarget) { target in ReportSheet(target: target) { showBlock = true } }
+        .blockConfirmation(userName: state.value?.displayName, isPresented: $showBlock) {
+            Task {
+                do { try await env.safety.block(userID: userID); Haptics.success(); dismiss() }
+                catch { self.error = AppError.from(error) }
+            }
+        }
+        .alert(Text("state.error.title"), isPresented: Binding(get: { error != nil }, set: { if !$0 { error = nil } })) {
+            Button("action.ok", role: .cancel) {}
+        } message: { Text(error?.message ?? "") }
+    }
+
+    private func content(_ profile: PublicProfile) -> some View {
+        ScrollView {
+            VStack(spacing: Theme.Spacing.l) {
+                ProfileHeader(
+                    name: profile.displayName, avatarURL: profile.avatarURL, isVerified: profile.isVerified,
+                    neighborhoodID: nil, bio: profile.bio, interestIDs: profile.interestIDs,
+                    stats: [
+                        (String(profile.hostedActivityCount), String(localized: "profile.stat.hosted")),
+                        (profile.memberSince.formatted(.dateTime.month(.abbreviated).year()), String(localized: "profile.stat.member_since")),
+                    ])
+                if profile.isVerified {
+                    Text("profile.verified_note")
+                        .font(.caption)
+                        .foregroundStyle(Theme.Palette.inkTertiary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, Theme.Spacing.xxl)
+                }
+                ProfileGrid(tab: $gridTab, tabs: [.upcoming], items: upcoming)
+            }
+            .padding(.top, Theme.Spacing.s)
+        }
+        .toolbar {
+            ToolbarItem(placement: .principal) { Text(profile.displayName).font(.headline) }
+            ToolbarItem(placement: .topBarTrailing) {
+                Menu {
+                    Button { reportTarget = ReportTarget(userID: profile.id, userName: profile.displayName) } label: {
+                        Label("detail.report", systemImage: "flag")
+                    }
+                    Button(role: .destructive) { showBlock = true } label: { Label("profile.block", systemImage: "hand.raised.slash") }
+                } label: { Image(systemName: "ellipsis") }
+                .accessibilityLabel(Text("detail.more"))
+            }
+        }
+    }
+
+    private func load() async {
+        if state.value == nil { state = .loading }
+        do {
+            state = .loaded(try await env.profiles.profile(id: userID))
+            upcoming = (try? await env.activities.activities(hostedBy: userID)) ?? []
+        } catch {
+            state = .failed(AppError.from(error))
+        }
     }
 }
 
@@ -178,105 +451,6 @@ struct EditProfileView: View {
             dismiss()
         } catch {
             self.error = AppError.from(error)
-        }
-    }
-}
-
-/// Another person's profile. Shows only public information — never contact details.
-struct PublicProfileView: View {
-    let userID: UUID
-    @Environment(AppEnvironment.self) private var env
-    @Environment(\.dismiss) private var dismiss
-    @State private var state: LoadState<PublicProfile> = .idle
-    @State private var upcoming: [Activity] = []
-    @State private var reportTarget: ReportTarget?
-    @State private var showBlock = false
-    @State private var error: AppError?
-
-    var body: some View {
-        Group {
-            switch state {
-            case .idle, .loading: ProgressView().frame(maxWidth: .infinity, maxHeight: .infinity)
-            case .failed(let error): ErrorStateView(error: error) { Task { await load() } }
-            case .loaded(let profile): content(profile)
-            }
-        }
-        .screenBackground()
-        .navigationBarTitleDisplayMode(.inline)
-        .task { await load() }
-        .sheet(item: $reportTarget) { target in ReportSheet(target: target) { showBlock = true } }
-        .blockConfirmation(userName: state.value?.displayName, isPresented: $showBlock) {
-            Task {
-                do { try await env.safety.block(userID: userID); Haptics.success(); dismiss() }
-                catch { self.error = AppError.from(error) }
-            }
-        }
-        .alert(Text("state.error.title"), isPresented: Binding(get: { error != nil }, set: { if !$0 { error = nil } })) {
-            Button("action.ok", role: .cancel) {}
-        } message: { Text(error?.message ?? "") }
-    }
-
-    private func content(_ profile: PublicProfile) -> some View {
-        ScrollView {
-            VStack(spacing: Theme.Spacing.l) {
-                AvatarView(name: profile.displayName, url: profile.avatarURL, size: 104)
-                HStack(spacing: 6) {
-                    Text(profile.displayName).font(.rvTitle)
-                    if profile.isVerified { VerifiedBadge(size: .title3) }
-                }
-                if profile.isVerified {
-                    Text("profile.verified_note").font(.footnote).foregroundStyle(Theme.Palette.inkSecondary).multilineTextAlignment(.center)
-                }
-                if !profile.bio.isEmpty { Text(profile.bio).multilineTextAlignment(.center).foregroundStyle(Theme.Palette.ink) }
-                HStack(spacing: Theme.Spacing.xl) {
-                    stat("\(profile.hostedActivityCount)", "profile.stat.hosted")
-                    stat(profile.memberSince.formatted(.dateTime.month(.abbreviated).year()), "profile.stat.member_since")
-                }
-                FlowLayout(spacing: 6) {
-                    ForEach(profile.interestIDs.compactMap(Interest.find)) { interest in
-                        StatusPill(text: interest.title, symbol: interest.category.symbol, tint: interest.category.tint, background: interest.category.softTint)
-                    }
-                }
-                if !upcoming.isEmpty {
-                    VStack(alignment: .leading, spacing: Theme.Spacing.m) {
-                        SectionHeader(title: String(localized: "profile.upcoming_hosted"))
-                        ForEach(upcoming) { activity in
-                            NavigationLink(value: Route.activity(activity.id)) { ActivityRow(activity: activity).rvCard(padding: Theme.Spacing.m) }
-                                .buttonStyle(.plain)
-                        }
-                    }
-                }
-            }
-            .padding(Theme.Spacing.screen)
-        }
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Menu {
-                    Button { reportTarget = ReportTarget(userID: profile.id, userName: profile.displayName) } label: {
-                        Label("detail.report", systemImage: "flag")
-                    }
-                    Button(role: .destructive) { showBlock = true } label: { Label("profile.block", systemImage: "hand.raised.slash") }
-                } label: { Image(systemName: "ellipsis.circle") }
-                .accessibilityLabel(Text("detail.more"))
-            }
-        }
-    }
-
-    private func stat(_ value: String, _ label: LocalizedStringKey) -> some View {
-        VStack(spacing: 2) {
-            Text(value).font(.rvHeadline).foregroundStyle(Theme.Palette.ink)
-            Text(label).font(.caption).foregroundStyle(Theme.Palette.inkSecondary)
-        }
-        .accessibilityElement(children: .combine)
-    }
-
-    private func load() async {
-        if state.value == nil { state = .loading }
-        do {
-            state = .loaded(try await env.profiles.profile(id: userID))
-            upcoming = (try? await env.activities.activities(hostedBy: userID)) ?? []
-        } catch {
-            state = .failed(AppError.from(error))
         }
     }
 }

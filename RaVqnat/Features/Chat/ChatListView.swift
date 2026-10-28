@@ -47,12 +47,11 @@ private struct ThreadRow: View {
                 .font(.title3.weight(.semibold))
                 .foregroundStyle(thread.category.tint)
                 .frame(width: 52, height: 52)
-                .background(Theme.Palette.surface, in: Rectangle())
-                .overlay(Rectangle().strokeBorder(Theme.Palette.ink, lineWidth: Theme.Stroke.hairline))
+                .background(Theme.Palette.surfaceMuted, in: Circle())
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 3) {
                 HStack {
-                    Text(thread.title).font(.system(.body, design: .serif).weight(.medium)).foregroundStyle(Theme.Palette.ink).lineLimit(1)
+                    Text(thread.title).font(.body.weight(.semibold)).foregroundStyle(Theme.Palette.ink).lineLimit(1)
                     Spacer()
                     if let date = thread.lastMessageAt {
                         Text(date.formatted(.relative(presentation: .numeric, unitsStyle: .narrow)))
@@ -69,7 +68,7 @@ private struct ThreadRow: View {
                         Text("\(min(thread.unreadCount, 99))")
                             .font(.caption.monospaced().bold()).foregroundStyle(.white)
                             .padding(.horizontal, 6).frame(minWidth: 22, minHeight: 22)
-                            .background(Theme.Palette.accent, in: Rectangle())
+                            .background(Theme.Palette.accent, in: Capsule())
                             .accessibilityLabel(Text("chats.unread \(thread.unreadCount)"))
                     }
                 }

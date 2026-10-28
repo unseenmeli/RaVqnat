@@ -7,10 +7,10 @@ struct AvatarView: View {
 
     var body: some View {
         ZStack {
-            Circle().fill(Theme.Palette.surfaceMuted)
+            Circle().fill(Theme.Palette.surfaceStrong)
             Text(initials)
-                .font(.system(size: size * 0.38, weight: .regular, design: .serif))
-                .foregroundStyle(Theme.Palette.ink)
+                .font(.system(size: size * 0.38, weight: .semibold))
+                .foregroundStyle(Theme.Palette.inkSecondary)
             if let url {
                 AsyncImage(url: url) { phase in
                     if let image = phase.image {
@@ -21,7 +21,6 @@ struct AvatarView: View {
         }
         .frame(width: size, height: size)
         .clipShape(Circle())
-        .overlay(Circle().strokeBorder(Theme.Palette.ink, lineWidth: size > 60 ? Theme.Stroke.bold : Theme.Stroke.hairline))
         .accessibilityHidden(true)
     }
 
@@ -38,8 +37,7 @@ struct VerifiedBadge: View {
     var body: some View {
         Image(systemName: "checkmark.seal.fill")
             .font(size)
-            .foregroundStyle(Theme.Palette.canvas, Theme.Palette.ink)
-            .symbolRenderingMode(.palette)
+            .foregroundStyle(Theme.Palette.accent)
             .accessibilityLabel(Text("verification.badge.accessibility"))
     }
 }

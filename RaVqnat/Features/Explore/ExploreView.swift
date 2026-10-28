@@ -28,7 +28,7 @@ struct ExploreView: View {
     private func content(_ model: ExploreViewModel) -> some View {
         @Bindable var model = model
         ScrollView {
-            LazyVStack(alignment: .leading, spacing: Theme.Spacing.l, pinnedViews: []) {
+            LazyVStack(alignment: .leading, spacing: Theme.Spacing.xl, pinnedViews: []) {
                 header(model)
                 categoryRow(model)
                 quickFilters(model)
@@ -61,8 +61,27 @@ struct ExploreView: View {
     }
 
     private func header(_ model: ExploreViewModel) -> some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.s) {
-            HStack {
+        VStack(alignment: .leading, spacing: Theme.Spacing.l) {
+            HStack(spacing: Theme.Spacing.s) {
+                Wordmark()
+                Spacer()
+                Button { showFilters = true } label: { Image(systemName: "slider.horizontal.3") }
+                    .buttonStyle(.icon)
+                    .overlay(alignment: .topTrailing) {
+                        if model.query.activeFilterCount > 0 {
+                            Circle().fill(Theme.Palette.accent).frame(width: 10, height: 10)
+                                .overlay(Circle().stroke(Theme.Palette.canvas, lineWidth: 2))
+                        }
+                    }
+                    .accessibilityLabel(Text("explore.filters"))
+                    .accessibilityValue(Text("explore.filters.active \(model.query.activeFilterCount)"))
+            }
+
+            VStack(alignment: .leading, spacing: 6) {
+                Text(greeting)
+                    .rvHero(size: 30)
+                    .foregroundStyle(Theme.Palette.ink)
+                    .accessibilityAddTraits(.isHeader)
                 Menu {
                     Button {
                         Task {
@@ -75,44 +94,16 @@ struct ExploreView: View {
                     } label: { Label("explore.near_me", systemImage: "location.fill") }
                     Button { showNeighborhoodPicker = true } label: { Label("explore.choose_neighborhood", systemImage: "map") }
                 } label: {
-                    HStack(spacing: 6) {
-                        Image(systemName: model.usesDeviceLocation ? "location.fill" : "mappin").font(.caption.weight(.bold))
+                    HStack(spacing: 4) {
+                        Image(systemName: model.usesDeviceLocation ? "location.fill" : "mappin").font(.footnote)
                         Text(model.usesDeviceLocation ? String(localized: "explore.near_you") : (Neighborhood.find(model.originNeighborhoodID)?.name ?? String(localized: "explore.all_tbilisi")))
                         Image(systemName: "chevron.down").font(.caption2.weight(.bold))
                     }
-                    .rvLabelStyle()
-                    .foregroundStyle(Theme.Palette.ink)
-                    .padding(.horizontal, Theme.Spacing.m)
-                    .frame(minHeight: 36)
-                    .overlay(RoundedRectangle(cornerRadius: Theme.Radius.small).strokeBorder(Theme.Palette.ink, lineWidth: Theme.Stroke.hairline))
+                    .font(.subheadline.weight(.medium))
+                    .foregroundStyle(Theme.Palette.inkSecondary)
                 }
                 .accessibilityIdentifier("explore.location")
-                Spacer()
-                Button { showFilters = true } label: {
-                    Image(systemName: "slider.horizontal.3")
-                        .font(.headline)
-                        .frame(width: 44, height: 44)
-                        .background(Theme.Palette.surface, in: RoundedRectangle(cornerRadius: Theme.Radius.small))
-                        .overlay(RoundedRectangle(cornerRadius: Theme.Radius.small).strokeBorder(Theme.Palette.ink, lineWidth: Theme.Stroke.regular))
-                        .overlay(alignment: .topTrailing) {
-                            if model.query.activeFilterCount > 0 {
-                                Text("\(model.query.activeFilterCount)")
-                                    .font(.caption2.monospaced().bold()).foregroundStyle(.white)
-                                    .frame(minWidth: 18, minHeight: 18)
-                                    .background(Theme.Palette.accent, in: Rectangle())
-                                    .offset(x: 5, y: -5)
-                            }
-                        }
-                }
-                .foregroundStyle(Theme.Palette.ink)
-                .accessibilityLabel(Text("explore.filters"))
-                .accessibilityValue(Text("explore.filters.active \(model.query.activeFilterCount)"))
             }
-            Text(greeting)
-                .rvHero(size: 42)
-                .foregroundStyle(Theme.Palette.ink)
-                .padding(.top, Theme.Spacing.m)
-                .accessibilityAddTraits(.isHeader)
         }
         .padding(.horizontal, Theme.Spacing.screen)
         .padding(.top, Theme.Spacing.s)

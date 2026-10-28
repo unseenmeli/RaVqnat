@@ -13,7 +13,7 @@ struct HostHomeView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: Theme.Spacing.xl) {
                 VStack(alignment: .leading, spacing: Theme.Spacing.s) {
-                    Text("host.title").rvHero(size: 48).foregroundStyle(Theme.Palette.ink).accessibilityAddTraits(.isHeader)
+                    Text("host.title").rvHero(size: 34).foregroundStyle(Theme.Palette.ink).accessibilityAddTraits(.isHeader)
                     Text("host.subtitle").foregroundStyle(Theme.Palette.inkSecondary)
                 }
                 eligibilityCard
@@ -52,8 +52,7 @@ struct HostHomeView: View {
                         .font(.title2.weight(.bold))
                         .foregroundStyle(Theme.Palette.canvas)
                         .frame(width: 56, height: 56)
-                        .background(Theme.Palette.ink, in: Rectangle())
-                        .background(Rectangle().fill(Theme.Palette.accent).offset(x: 4, y: 4))
+                        .background(Theme.Palette.ink, in: Circle())
                     VStack(alignment: .leading, spacing: 2) {
                         Text("host.create").font(.rvTitle3).foregroundStyle(Theme.Palette.ink)
                         Text("host.create.subtitle").font(.subheadline).foregroundStyle(Theme.Palette.inkSecondary)
@@ -61,7 +60,6 @@ struct HostHomeView: View {
                     Spacer()
                 }
                 .rvCard(padding: Theme.Spacing.xl)
-                .echoShadow()
             }
             .buttonStyle(.plain)
             .accessibilityIdentifier("host.create")

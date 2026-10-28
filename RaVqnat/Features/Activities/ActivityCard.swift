@@ -49,68 +49,58 @@ struct ActivityCard: View {
     var onJoin: (() -> Void)?
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            ZStack(alignment: .topLeading) {
-                ActivityCoverArt(category: activity.category, seed: activity.id, imageURL: activity.coverImageURL)
-                    .frame(height: 140)
-                HStack(alignment: .top) {
-                    CategoryTag(category: activity.category)
-                    Spacer()
-                    spotsTag
+        VStack(alignment: .leading, spacing: Theme.Spacing.m) {
+            ActivityCoverArt(category: activity.category, seed: activity.id, imageURL: activity.coverImageURL)
+                .frame(height: 210)
+                .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
+                .overlay(alignment: .topLeading) {
+                    HStack {
+                        CategoryTag(category: activity.category)
+                        Spacer()
+                        StatusPill(text: activity.isFull ? String(localized: "activity.full") : String(localized: "activity.spots_left \(activity.spotsLeft)"),
+                                   background: .clear)
+                            .background(.thinMaterial, in: Capsule())
+                    }
+                    .padding(Theme.Spacing.m)
                 }
-                .padding(Theme.Spacing.m)
-            }
-            Rectangle().fill(Theme.Palette.ink).frame(height: Theme.Stroke.hairline)
 
-            VStack(alignment: .leading, spacing: Theme.Spacing.m) {
-                Text(ActivityTime.smartString(activity.startsAt, timeZoneID: activity.timeZoneID))
-                    .rvLabelStyle()
-                    .foregroundStyle(Theme.Palette.accentText)
+            VStack(alignment: .leading, spacing: 4) {
+                HStack {
+                    Text(ActivityTime.smartString(activity.startsAt, timeZoneID: activity.timeZoneID))
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(Theme.Palette.accentText)
+                    Spacer()
+                    if let distance = activity.distanceMeters {
+                        Text(LocationPrivacy.distanceString(distance))
+                            .font(.subheadline)
+                            .foregroundStyle(Theme.Palette.inkSecondary)
+                    }
+                }
                 Text(activity.title)
-                    .font(.rvHeadline)
+                    .font(.title3.weight(.semibold))
+                    .tracking(-0.3)
                     .foregroundStyle(Theme.Palette.ink)
                     .lineLimit(2)
                     .multilineTextAlignment(.leading)
                     .fixedSize(horizontal: false, vertical: true)
-                Text(locationLine)
-                    .rvLabelStyle(.rvCaption)
+                Text(activity.neighborhood?.name ?? "")
+                    .font(.subheadline)
                     .foregroundStyle(Theme.Palette.inkSecondary)
-
-                Rectangle().fill(Theme.Palette.hairline).frame(height: 1)
-
-                HStack(spacing: Theme.Spacing.s) {
-                    AvatarView(name: activity.host.displayName, url: activity.host.avatarURL, size: 28)
-                    Text(activity.host.displayName)
-                        .font(.subheadline.weight(.medium))
-                        .foregroundStyle(Theme.Palette.ink)
-                        .lineLimit(1)
-                    if activity.host.isVerified { VerifiedBadge(size: .caption) }
-                    Spacer(minLength: Theme.Spacing.s)
-                    joinButton
-                }
             }
-            .padding(Theme.Spacing.l)
+
+            HStack(spacing: Theme.Spacing.s) {
+                AvatarView(name: activity.host.displayName, url: activity.host.avatarURL, size: 28)
+                Text(activity.host.displayName)
+                    .font(.subheadline.weight(.medium))
+                    .foregroundStyle(Theme.Palette.ink)
+                    .lineLimit(1)
+                if activity.host.isVerified { VerifiedBadge(size: .caption) }
+                Spacer(minLength: Theme.Spacing.s)
+                joinButton
+            }
         }
-        .background(Theme.Palette.surface)
-        .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card))
-        .overlay(RoundedRectangle(cornerRadius: Theme.Radius.card).strokeBorder(Theme.Palette.ink, lineWidth: Theme.Stroke.regular))
-        .echoShadow(Theme.Palette.ink)
+        .contentShape(Rectangle())
         .accessibilityElement(children: .contain)
-    }
-
-    private var locationLine: String {
-        let name = activity.neighborhood?.name ?? ""
-        guard let distance = activity.distanceMeters else { return name }
-        return "\(name) · \(LocationPrivacy.distanceString(distance))"
-    }
-
-    @ViewBuilder private var spotsTag: some View {
-        if activity.isFull {
-            StatusPill(text: String(localized: "activity.full"), inverted: true)
-        } else {
-            StatusPill(text: String(localized: "activity.spots_left \(activity.spotsLeft)"), background: Theme.Palette.surface)
-                .overlay(RoundedRectangle(cornerRadius: Theme.Radius.small).strokeBorder(Theme.Palette.ink, lineWidth: Theme.Stroke.hairline))
-        }
     }
 
     @ViewBuilder private var joinButton: some View {
@@ -124,7 +114,8 @@ struct ActivityCard: View {
             .accessibilityIdentifier("card.join.\(activity.id.uuidString)")
             .accessibilityHint(Text("join.hint \(activity.title)"))
         } else {
-            StatusPill(text: state.title, symbol: state.symbol, inverted: state == .going)
+            StatusPill(text: state.title, symbol: state.symbol,
+                       tint: state == .going ? Theme.Palette.success : Theme.Palette.inkSecondary)
         }
     }
 }
@@ -132,7 +123,7 @@ struct ActivityCard: View {
 struct CompactLabelStyle: LabelStyle {
     func makeBody(configuration: Configuration) -> some View {
         HStack(spacing: 6) {
-            configuration.icon.frame(width: 18).foregroundStyle(Theme.Palette.ink)
+            configuration.icon.frame(width: 18).foregroundStyle(Theme.Palette.inkTertiary)
             configuration.title.lineLimit(1)
         }
     }
@@ -140,19 +131,12 @@ struct CompactLabelStyle: LabelStyle {
 
 struct ActivityCardSkeleton: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Rectangle().fill(Theme.Palette.surfaceMuted).frame(height: 140)
-            VStack(alignment: .leading, spacing: Theme.Spacing.s) {
-                Text(verbatim: "Placeholder activity title here").font(.rvHeadline)
-                Text(verbatim: "Saturday, 17:00").font(.subheadline)
-                Text(verbatim: "Neighbourhood · 1 km").font(.subheadline)
-                HStack { Circle().frame(width: 28, height: 28); Text(verbatim: "Host name"); Spacer() }
-            }
-            .padding(Theme.Spacing.l)
+        VStack(alignment: .leading, spacing: Theme.Spacing.m) {
+            RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous).fill(Theme.Palette.surfaceMuted).frame(height: 210)
+            Text(verbatim: "Saturday, 17:00").font(.subheadline)
+            Text(verbatim: "Placeholder activity title here").font(.title3)
+            Text(verbatim: "Neighbourhood").font(.subheadline)
         }
-        .background(Theme.Palette.surface)
-        .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card))
-        .overlay(RoundedRectangle(cornerRadius: Theme.Radius.card).strokeBorder(Theme.Palette.hairline, lineWidth: Theme.Stroke.regular))
         .skeleton()
     }
 }
@@ -165,13 +149,12 @@ struct ActivityRow: View {
     var body: some View {
         HStack(spacing: Theme.Spacing.m) {
             ActivityCoverArt(category: activity.category, seed: activity.id, imageURL: activity.coverImageURL)
-                .frame(width: 64, height: 64)
-                .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.small))
-                .overlay(RoundedRectangle(cornerRadius: Theme.Radius.small).strokeBorder(Theme.Palette.ink, lineWidth: Theme.Stroke.hairline))
+                .frame(width: 60, height: 60)
+                .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.control, style: .continuous))
             VStack(alignment: .leading, spacing: 3) {
+                Text(activity.title).font(.body.weight(.semibold)).foregroundStyle(Theme.Palette.ink).lineLimit(2)
                 Text(ActivityTime.smartString(activity.startsAt, timeZoneID: activity.timeZoneID))
-                    .rvLabelStyle(.rvCaption).foregroundStyle(Theme.Palette.accentText)
-                Text(activity.title).font(.system(.body, design: .serif).weight(.medium)).foregroundStyle(Theme.Palette.ink).lineLimit(2)
+                    .font(.footnote).foregroundStyle(Theme.Palette.inkSecondary)
                 if showStatus { statusLine }
             }
             Spacer(minLength: 0)
@@ -186,7 +169,7 @@ struct ActivityRow: View {
             Text("activity.status.cancelled").rvLabelStyle(.rvCaption).foregroundStyle(Theme.Palette.danger)
         } else if let state = activity.myMembership {
             Text(state.title).rvLabelStyle(.rvCaption)
-                .foregroundStyle(state.occupiesSpot ? Theme.Palette.ink : Theme.Palette.inkSecondary)
+                .foregroundStyle(state.occupiesSpot ? Theme.Palette.success : Theme.Palette.inkSecondary)
         } else {
             Text("activity.approved_count \(activity.approvedCount) \(activity.capacity)")
                 .rvLabelStyle(.rvCaption).foregroundStyle(Theme.Palette.inkSecondary)

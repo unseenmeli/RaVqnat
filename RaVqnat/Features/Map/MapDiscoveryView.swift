@@ -146,8 +146,7 @@ struct MapDiscoveryView: View {
                     .font(.headline)
                     .foregroundStyle(Theme.Palette.ink)
                     .frame(width: 44, height: 44)
-                    .background(Theme.Palette.surface, in: Rectangle())
-                    .overlay(Rectangle().strokeBorder(Theme.Palette.ink, lineWidth: Theme.Stroke.regular))
+                    .background(.regularMaterial, in: Circle())
             }
             .padding(Theme.Spacing.l)
             .accessibilityLabel(Text("explore.near_me"))
@@ -190,11 +189,11 @@ private struct ActivityPin: View {
     var body: some View {
         Image(systemName: category.symbol)
             .font(.system(size: isSelected ? 18 : 14, weight: .bold))
-            .foregroundStyle(isSelected ? Theme.Palette.ink : Theme.Palette.canvas)
-            .frame(width: isSelected ? 44 : 34, height: isSelected ? 44 : 34)
-            .background(isSelected ? Theme.Palette.surface : Theme.Palette.ink, in: Circle())
-            .overlay(Circle().strokeBorder(Theme.Palette.ink, lineWidth: 2))
-            .background(Circle().fill(Theme.Palette.accent).offset(x: 3, y: 3))
+            .foregroundStyle(Theme.Palette.canvas)
+            .frame(width: isSelected ? 46 : 34, height: isSelected ? 46 : 34)
+            .background(Theme.Palette.ink, in: Circle())
+            .overlay(Circle().strokeBorder(isSelected ? Theme.Palette.accent : Theme.Palette.canvas, lineWidth: isSelected ? 3 : 2))
+            .shadow(color: .black.opacity(0.18), radius: 6, y: 3)
             .animation(.spring(duration: 0.25), value: isSelected)
             .frame(width: 48, height: 48)
             .contentShape(Circle())
@@ -206,12 +205,12 @@ private struct ClusterPin: View {
 
     var body: some View {
         Text("\(count)")
-            .font(.system(.subheadline, design: .monospaced).weight(.bold))
+            .font(.subheadline.weight(.bold))
             .foregroundStyle(Theme.Palette.ink)
             .frame(width: 42, height: 42)
-            .background(Theme.Palette.surface, in: Rectangle())
-            .overlay(Rectangle().strokeBorder(Theme.Palette.ink, lineWidth: 2))
-            .background(Rectangle().fill(Theme.Palette.accent).offset(x: 3, y: 3))
+            .background(Theme.Palette.surface, in: Circle())
+            .overlay(Circle().strokeBorder(Theme.Palette.ink, lineWidth: 2))
+            .shadow(color: .black.opacity(0.18), radius: 6, y: 3)
             .frame(width: 48, height: 48)
             .contentShape(Circle())
     }

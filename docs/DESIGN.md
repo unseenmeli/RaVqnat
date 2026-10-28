@@ -1,38 +1,36 @@
-# RaVqnat design language — "ink on paper, with a pink echo"
+# RaVqnat design language — modern, minimal, monochrome
 
-A middle ground between brutalist-editorial (black on white, big uppercase serif, monospaced
-body, thick borders, invert-on-select) and a softer, illustrated iOS feel (warm dot-grid paper,
-halftone screentone, hot pink used sparingly as an "afterimage").
+Closer to Instagram / TikTok / Threads than to a "designed" app: the content is the colour.
 
 ## Principles
-- **Ink first.** Almost everything is ink (#111) on warm paper (#F5F4F0). Colour is earned.
-- **Pink is an echo, not a fill.** `accent` (#FF2E9A) appears as offset afterimages behind
-  primary buttons, selected chips and symbols, the current onboarding step and the active tab.
-  `accentText` (#C2126C) is the only pink allowed for text (AA contrast), used for times.
-- **Editorial type.** New York serif for headlines (uppercase for Latin scripts via
-  `rvHero`), SF Mono for small labels (`rvLabelStyle`), SF Pro for reading text.
-  Georgian is never uppercased (that would turn Mkhedruli into Mtavruli).
-- **Near-square geometry.** Radii of 3–6 pt, 1–2 pt ink borders, hard offset shadows
-  (`echoShadow`) instead of blurred drop shadows.
-- **Invert to select.** Selected rows, tags and checkboxes flip to solid ink with paper text.
-- **Restraint.** No gradients as decoration, no glows, no chrome — this is not Y2K.
+- **Monochrome UI.** Pure white / true black canvas, soft grey surfaces, near-black ink.
+- **One accent, used tiny.** Pink (`accent`, #FF2E9A) is reserved for small signals only:
+  the verified check, unread dots, the active-filter dot, the wordmark dot and event times
+  (`accentText`, AA-safe). Never for large fills or buttons.
+- **System type, tight and bold.** SF Pro throughout; large headings are bold with slightly
+  negative tracking (`rvHero`). No serif or monospaced display faces.
+- **Capsules and soft corners.** Capsule buttons and chips, 20 pt continuous-corner cards,
+  no borders, no hard shadows. Elevation only where something floats (map pins, toasts).
+- **Custom chrome.** Icon-only tab bar with a centre "+" (host) and the user's avatar as the
+  Profile tab; hidden on pushed screens. Wordmark + round icon buttons as the Explore top bar;
+  floating round back/share/more buttons over the activity cover.
+- **Profiles like social apps.** Centred avatar, stats row, Edit / Verify buttons, bio,
+  interest chips, icon tabs with an underline, 3-column portrait grid; settings behind ☰.
 
 ## Tokens (`Core/DesignSystem/Theme.swift`)
 | Token | Light | Dark |
 |---|---|---|
-| canvas (paper) | #F5F4F0 | #121110 |
-| surface | #FFFFFF | #1B1A18 |
-| ink | #111111 | #F3F1EC |
+| canvas | #FFFFFF | #000000 |
+| surfaceMuted | #F2F2F4 | #1C1C1F |
+| ink | #0A0A0A | #FAFAFA |
+| inkSecondary | #6B6B70 | #9A9AA0 |
 | accent | #FF2E9A | #FF4FAE |
-| accentText | #C2126C | #FF7AC0 |
 
 ## Components
-- `PrimaryButtonStyle` — ink block with pink echo; pressing moves the face onto its echo.
-- `SecondaryButtonStyle` — paper with ink border; inverts while pressed.
-- `FilterChip`, `StatusPill`, `CategoryTag` — monospaced tags; selected chips invert + echo.
-- `EditorialList` — numbered rows with serif titles, inverted when selected.
-- `EchoText` / `EchoSymbol` — content with two trailing pink afterimages.
-- `ActivityCoverArt` — screentone (dots / diagonal / grid per category) + echoed symbol.
-- `DotPaper` — the dot-grid canvas behind every screen.
+`PrimaryButtonStyle` (ink capsule), `SecondaryButtonStyle` (grey capsule), `PillButtonStyle`,
+`IconButtonStyle` (round, grey or material over media), `FilterChip`, `StatusPill`,
+`CategoryTag` (material capsule over covers), `OptionList` (grouped single choice),
+`ProfileHeader` / `ProfileGrid`, `ActivityCoverArt` (faint oversized watermark + crisp symbol),
+`Wordmark`.
 
-Reduce Motion disables the welcome ticker, button press animation and skeleton shimmer.
+Reduce Motion stops the welcome marquee, press-scale animations and skeleton shimmer.
