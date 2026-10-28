@@ -1,0 +1,3 @@
+#include "Shared.xcconfig"
+APNS_ENVIRONMENT = production
+#include? "Secrets.xcconfig"

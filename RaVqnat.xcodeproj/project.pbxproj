@@ -1,0 +1,536 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0A0000000000000000000052 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 0A0000000000000000000051 /* Supabase */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		0A0000000000000000000061 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0A0000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0A0000000000000000000030;
+			remoteInfo = RaVqnat;
+		};
+		0A0000000000000000000063 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0A0000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0A0000000000000000000030;
+			remoteInfo = RaVqnat;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0A0000000000000000000020 /* RaVqnat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RaVqnat.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		0A0000000000000000000021 /* RaVqnatTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RaVqnatTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		0A0000000000000000000022 /* RaVqnatUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RaVqnatUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		0A0000000000000000000023 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		0A0000000000000000000024 /* RaVqnat.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RaVqnat.entitlements; sourceTree = "<group>"; };
+		0A0000000000000000000025 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
+		0A0000000000000000000026 /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
+		0A0000000000000000000027 /* Shared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Shared.xcconfig; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		0A0000000000000000000010 /* RaVqnat */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = RaVqnat;
+			sourceTree = "<group>";
+		};
+		0A0000000000000000000011 /* RaVqnatTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = RaVqnatTests;
+			sourceTree = "<group>";
+		};
+		0A0000000000000000000012 /* RaVqnatUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = RaVqnatUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		0A0000000000000000000041 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0A0000000000000000000052 /* Supabase in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0A0000000000000000000044 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0A0000000000000000000047 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0A0000000000000000000002 = {
+			isa = PBXGroup;
+			children = (
+				0A0000000000000000000010 /* RaVqnat */,
+				0A0000000000000000000004 /* Config */,
+				0A0000000000000000000005 /* Tests */,
+				0A0000000000000000000003 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		0A0000000000000000000003 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0A0000000000000000000020 /* RaVqnat.app */,
+				0A0000000000000000000021 /* RaVqnatTests.xctest */,
+				0A0000000000000000000022 /* RaVqnatUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0A0000000000000000000004 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				0A0000000000000000000023 /* Info.plist */,
+				0A0000000000000000000024 /* RaVqnat.entitlements */,
+				0A0000000000000000000027 /* Shared.xcconfig */,
+				0A0000000000000000000025 /* Debug.xcconfig */,
+				0A0000000000000000000026 /* Release.xcconfig */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
+		0A0000000000000000000005 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				0A0000000000000000000011 /* RaVqnatTests */,
+				0A0000000000000000000012 /* RaVqnatUITests */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		0A0000000000000000000030 /* RaVqnat */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0A0000000000000000000071 /* Build configuration list for PBXNativeTarget "RaVqnat" */;
+			buildPhases = (
+				0A0000000000000000000040 /* Sources */,
+				0A0000000000000000000041 /* Frameworks */,
+				0A0000000000000000000042 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				0A0000000000000000000010 /* RaVqnat */,
+			);
+			name = RaVqnat;
+			packageProductDependencies = (
+				0A0000000000000000000051 /* Supabase */,
+			);
+			productName = RaVqnat;
+			productReference = 0A0000000000000000000020 /* RaVqnat.app */;
+			productType = "com.apple.product-type.application";
+		};
+		0A0000000000000000000031 /* RaVqnatTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0A0000000000000000000072 /* Build configuration list for PBXNativeTarget "RaVqnatTests" */;
+			buildPhases = (
+				0A0000000000000000000043 /* Sources */,
+				0A0000000000000000000044 /* Frameworks */,
+				0A0000000000000000000045 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				0A0000000000000000000060 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				0A0000000000000000000011 /* RaVqnatTests */,
+			);
+			name = RaVqnatTests;
+			productName = RaVqnatTests;
+			productReference = 0A0000000000000000000021 /* RaVqnatTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		0A0000000000000000000032 /* RaVqnatUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0A0000000000000000000073 /* Build configuration list for PBXNativeTarget "RaVqnatUITests" */;
+			buildPhases = (
+				0A0000000000000000000046 /* Sources */,
+				0A0000000000000000000047 /* Frameworks */,
+				0A0000000000000000000048 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				0A0000000000000000000062 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				0A0000000000000000000012 /* RaVqnatUITests */,
+			);
+			name = RaVqnatUITests;
+			productName = RaVqnatUITests;
+			productReference = 0A0000000000000000000022 /* RaVqnatUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		0A0000000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2700;
+				LastUpgradeCheck = 2700;
+				TargetAttributes = {
+					0A0000000000000000000030 = {
+						CreatedOnToolsVersion = 27.0;
+					};
+					0A0000000000000000000031 = {
+						CreatedOnToolsVersion = 27.0;
+						TestTargetID = 0A0000000000000000000030;
+					};
+					0A0000000000000000000032 = {
+						CreatedOnToolsVersion = 27.0;
+						TestTargetID = 0A0000000000000000000030;
+					};
+				};
+			};
+			buildConfigurationList = 0A0000000000000000000070 /* Build configuration list for PBXProject "RaVqnat" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				ka,
+				Base,
+			);
+			mainGroup = 0A0000000000000000000002;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				0A0000000000000000000050 /* XCRemoteSwiftPackageReference "supabase-swift" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 0A0000000000000000000003 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				0A0000000000000000000030 /* RaVqnat */,
+				0A0000000000000000000031 /* RaVqnatTests */,
+				0A0000000000000000000032 /* RaVqnatUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		0A0000000000000000000042 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0A0000000000000000000045 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0A0000000000000000000048 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		0A0000000000000000000040 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0A0000000000000000000043 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0A0000000000000000000046 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		0A0000000000000000000060 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0A0000000000000000000030 /* RaVqnat */;
+			targetProxy = 0A0000000000000000000061 /* PBXContainerItemProxy */;
+		};
+		0A0000000000000000000062 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0A0000000000000000000030 /* RaVqnat */;
+			targetProxy = 0A0000000000000000000063 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		0A0000000000000000000080 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0A0000000000000000000025 /* Debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		0A0000000000000000000081 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0A0000000000000000000026 /* Release.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		0A0000000000000000000082 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Config/RaVqnat.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Config/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		0A0000000000000000000083 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Config/RaVqnat.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Config/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		0A0000000000000000000084 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(RV_BUNDLE_ID).tests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RaVqnat.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/RaVqnat";
+			};
+			name = Debug;
+		};
+		0A0000000000000000000085 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(RV_BUNDLE_ID).tests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RaVqnat.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/RaVqnat";
+			};
+			name = Release;
+		};
+		0A0000000000000000000086 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(RV_BUNDLE_ID).uitests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_TARGET_NAME = RaVqnat;
+			};
+			name = Debug;
+		};
+		0A0000000000000000000087 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(RV_BUNDLE_ID).uitests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_TARGET_NAME = RaVqnat;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0A0000000000000000000070 /* Build configuration list for PBXProject "RaVqnat" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0A0000000000000000000080 /* Debug */,
+				0A0000000000000000000081 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		0A0000000000000000000071 /* Build configuration list for PBXNativeTarget "RaVqnat" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0A0000000000000000000082 /* Debug */,
+				0A0000000000000000000083 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		0A0000000000000000000072 /* Build configuration list for PBXNativeTarget "RaVqnatTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0A0000000000000000000084 /* Debug */,
+				0A0000000000000000000085 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		0A0000000000000000000073 /* Build configuration list for PBXNativeTarget "RaVqnatUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0A0000000000000000000086 /* Debug */,
+				0A0000000000000000000087 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		0A0000000000000000000050 /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/supabase/supabase-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.55.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		0A0000000000000000000051 /* Supabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0A0000000000000000000050 /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Supabase;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 0A0000000000000000000001 /* Project object */;
+}

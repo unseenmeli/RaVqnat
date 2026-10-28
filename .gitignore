@@ -1,0 +1,23 @@
+# Xcode
+xcuserdata/
+DerivedData/
+build/
+*.xcuserstate
+*.xcscmblueprint
+.swiftpm/
+# Secrets — never commit
+Config/Secrets.xcconfig
+supabase/.env
+supabase/functions/.env
+*.p8
+.env
+.env.*
+!.env.example
+# Supabase local
+supabase/.branches
+supabase/.temp
+# Test artefacts
+.pgtest/
+*.xcresult
+.DS_Store
+.build/

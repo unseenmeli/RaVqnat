@@ -1,0 +1,18 @@
+// Shared build settings for all configurations.
+// Values here are NOT secret. Real credentials go in Config/Secrets.xcconfig (gitignored),
+// see Config/Secrets.example.xcconfig.
+
+RV_BUNDLE_ID = ge.ravqnat.app
+PRODUCT_BUNDLE_IDENTIFIER = $(RV_BUNDLE_ID)
+
+// Leave empty to run the app in mock mode (no backend required).
+// Note: "//" starts a comment in xcconfig files, so URLs are written as https:/$()/host
+SUPABASE_URL =
+SUPABASE_ANON_KEY =
+
+// APNs environment used when registering device tokens (development | production).
+APNS_ENVIRONMENT = development
+
+DEVELOPMENT_TEAM =
+
+#include? "Secrets.xcconfig"
