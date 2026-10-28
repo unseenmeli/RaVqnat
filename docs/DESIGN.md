@@ -14,8 +14,10 @@ Closer to Instagram / TikTok / Threads than to a "designed" app: the content is 
   negative tracking (`rvHero`). No serif or monospaced display faces.
 - **Capsules and soft corners.** Capsule buttons and chips, 20 pt continuous-corner cards,
   no borders, no hard shadows. Elevation only where something floats (map pins, toasts).
-- **Custom chrome.** Icon-only tab bar with a centre "+" (host) and the user's avatar as the
-  Profile tab; hidden on pushed screens. Wordmark + round icon buttons as the Explore top bar;
+- **Custom chrome.** A floating tab bar: Explore, Map, Chats and Profile (avatar) share one
+  frosted capsule with a sliding selection pill; the round ink "+" (host/create) sits on its
+  own at the far right. Hold the current tab and drag sideways to scrub between pages (live
+  switching with selection haptics, snaps on release). Hidden on pushed screens. Wordmark + round icon buttons as the Explore top bar;
   floating round back/share/more buttons over the activity cover.
 - **Profiles like social apps.** Centred avatar, stats row, Edit / Verify buttons, bio,
   interest chips, icon tabs with an underline, 3-column portrait grid; settings behind ☰.
@@ -40,7 +42,7 @@ bottom edge; text below keeps the 20 pt screen margin.
 
 ## Tab bar icons
 Custom icons are template images in Assets.xcassets named `tab-explore`, `tab-map`,
-`tab-create`, `tab-chats` (plus optional `-selected` variants). Missing assets fall back to
+`tab-create` (the + button), `tab-chats` (plus optional `-selected` variants). Missing assets fall back to
 SF Symbols.
 
 ## Components

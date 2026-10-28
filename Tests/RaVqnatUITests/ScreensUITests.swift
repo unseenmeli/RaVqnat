@@ -38,4 +38,22 @@ final class ScreensUITests: XCTestCase {
         app.buttons["profile.settings"].tap()
         snapshot(app, "16-settings")
     }
+
+    @MainActor
+    func testHoldAndDragAcrossTabBarSwitchesPages() {
+        let app = XCUIApplication.launchRaVqnat(signedIn: true)
+        let explore = app.buttons["tab.explore"]
+        XCTAssertTrue(explore.waitForExistence(timeout: 5))
+        snapshot(app, "17-tabbar")
+
+        // Hold the current tab, then slide to the right end of the capsule.
+        explore.press(forDuration: 0.5, thenDragTo: app.buttons["tab.profile"])
+        XCTAssertTrue(app.buttons["profile.edit"].waitForExistence(timeout: 3), "Dragging to the end lands on Profile")
+
+        // Dragging from a tab you are NOT on does nothing; tapping still works.
+        app.buttons["tab.map"].tap()
+        XCTAssertTrue(app.buttons["tab.map"].isSelected)
+        app.buttons["tab.host"].tap()
+        XCTAssertTrue(app.buttons["tab.host"].isSelected, "The separate + button opens hosting")
+    }
 }
