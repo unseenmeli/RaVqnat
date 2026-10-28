@@ -1,0 +1,40 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "CFBundleDisplayName": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RaVqnat"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "რავქნათ"
+          }
+        }
+      }
+    },
+    "NSLocationWhenInUseUsageDescription": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RaVqnat uses your location only while you use the app, to show activities near you. Your location is never shared with other people."
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RaVqnat შენს მდებარეობას მხოლოდ აპის გამოყენებისას იყენებს, ახლომდებარე აქტივობების საჩვენებლად. შენი მდებარეობა არავის ეზიარება."
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}
