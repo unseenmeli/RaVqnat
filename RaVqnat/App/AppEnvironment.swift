@@ -14,6 +14,7 @@ final class AppEnvironment {
     let chat: any ChatRepository
     let safety: any SafetyRepository
     let stories: any StoryRepository
+    let inbox: any InboxRepository
     let verification: any VerificationRepository
     let notificationsRepository: any NotificationRepository
     let push: PushNotificationService
@@ -24,7 +25,8 @@ final class AppEnvironment {
 
     init(config: AppConfig, auth: any AuthRepository, profiles: any ProfileRepository,
          activities: any ActivityRepository, memberships: any MembershipRepository, chat: any ChatRepository,
-         safety: any SafetyRepository, stories: any StoryRepository, verification: any VerificationRepository,
+         safety: any SafetyRepository, stories: any StoryRepository, inbox: any InboxRepository,
+         verification: any VerificationRepository,
          notifications: any NotificationRepository, preferences: LocalPreferences = LocalPreferences()) {
         self.config = config
         self.auth = auth
@@ -34,6 +36,7 @@ final class AppEnvironment {
         self.chat = chat
         self.safety = safety
         self.stories = stories
+        self.inbox = inbox
         self.verification = verification
         self.notificationsRepository = notifications
         self.preferences = preferences
@@ -66,7 +69,7 @@ final class AppEnvironment {
         let preferences = LocalPreferences(defaults: config.isUITesting ? UserDefaults(suiteName: "uitest")! : .standard)
         if config.resetMockState { preferences.reset() }
         return AppEnvironment(config: config, auth: backend, profiles: backend, activities: backend,
-                              memberships: backend, chat: backend, safety: backend, stories: backend, verification: backend,
+                              memberships: backend, chat: backend, safety: backend, stories: backend, inbox: backend, verification: backend,
                               notifications: backend, preferences: preferences)
     }
 
@@ -88,11 +91,6 @@ final class LocalPreferences {
 
     func checkInEnabled(activityID: UUID) -> Bool { defaults.bool(forKey: "checkin.\(activityID.uuidString)") }
     func setCheckInEnabled(_ enabled: Bool, activityID: UUID) { defaults.set(enabled, forKey: "checkin.\(activityID.uuidString)") }
-
-    var manualNeighborhoodID: String? {
-        get { defaults.string(forKey: "explore.neighborhood") }
-        set { defaults.set(newValue, forKey: "explore.neighborhood") }
-    }
 
     func reset() {
         for key in defaults.dictionaryRepresentation().keys where key.hasPrefix("safety.") || key.hasPrefix("checkin.") || key.hasPrefix("explore.") || key.hasPrefix("onboarding.") {

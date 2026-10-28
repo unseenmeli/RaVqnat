@@ -56,19 +56,12 @@ final class ExploreViewModel {
 
     private let activities: any ActivityRepository
     private let memberships: any MembershipRepository
-    /// Distances are measured from the user's home neighbourhood unless "Near me" is active.
-    private var homeCenter: Coordinate = .tbilisiCenter
     let pageSize = 10
     private var loadGeneration = 0
 
     init(activities: any ActivityRepository, memberships: any MembershipRepository) {
         self.activities = activities
         self.memberships = memberships
-    }
-
-    func configure(homeNeighborhoodID: String?) {
-        homeCenter = Neighborhood.find(homeNeighborhoodID)?.center ?? .tbilisiCenter
-        rebuildQuery(deviceLocation: nil)
     }
 
     /// Applies new filters. "Near me" asks for a single when-in-use location fix.
@@ -93,7 +86,8 @@ final class ExploreViewModel {
 
     private func rebuildQuery(deviceLocation: Coordinate?) {
         var query = ActivityQuery()
-        query.origin = deviceLocation ?? homeCenter
+        query.origin = deviceLocation ?? .tbilisiCenter
+        query.measuresDistance = deviceLocation != nil
         query.radiusMeters = deviceLocation != nil ? 5_000 : 15_000
         query.categories = filters.categories
         query.date = filters.date

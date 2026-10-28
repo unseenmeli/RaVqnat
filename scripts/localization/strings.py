@@ -95,8 +95,6 @@ STRINGS = {
     "onboarding.interests.subtitle": ("Pick a few. We'll use them to suggest activities.", "აირჩიე რამდენიმე — მათზე დაყრდნობით შემოგთავაზებთ აქტივობებს."),
     "onboarding.language.title": ("Preferred language", "სასურველი ენა"),
     "onboarding.language.subtitle": ("Used for notifications and to show which language you're comfortable in.", "გამოიყენება შეტყობინებებისთვის და აჩვენებს, რომელ ენაზე გირჩევნია საუბარი."),
-    "onboarding.neighborhood.title": ("Where in Tbilisi?", "თბილისის რომელ უბანში?"),
-    "onboarding.neighborhood.subtitle": ("Your home area for nearby suggestions. We never share it.", "შენი უბანი ახლომდებარე შეთავაზებებისთვის. არავის ვუზიარებთ."),
     "onboarding.finish": ("Let's go", "წავედით"),
 
     # Validation
@@ -106,7 +104,6 @@ STRINGS = {
     "validation.onboarding.notAdult": ("You must be 18 or older.", "უნდა იყო 18 წლის ან მეტის."),
     "validation.onboarding.noInterests": ("Pick at least one interest.", "აირჩიე ერთი ინტერესი მაინც."),
     "validation.onboarding.tooManyInterests": ("Pick up to 10 interests.", "აირჩიე მაქსიმუმ 10 ინტერესი."),
-    "validation.onboarding.noNeighborhood": ("Choose a neighbourhood.", "აირჩიე უბანი."),
     "validation.activity.titleTooShort": ("Add a short title (at least 4 characters).", "დაამატე სათაური (მინიმუმ 4 სიმბოლო)."),
     "validation.activity.titleTooLong": ("Keep the title under 80 characters.", "სათაური 80 სიმბოლოზე ნაკლები უნდა იყოს."),
     "validation.activity.descriptionTooShort": ("Tell people a bit more (at least 10 characters).", "ცოტა მეტი მოგვიყევი (მინიმუმ 10 სიმბოლო)."),
@@ -256,6 +253,19 @@ STRINGS = {
     "filter.clear_all": ("Clear all", "გასუფთავება"),
     "filter.show": ("Show activities", "აქტივობების ჩვენება"),
     "filter.open": ("Open filters", "ფილტრების გახსნა"),
+
+    # Notifications inbox
+    "inbox.title": ("Notifications", "შეტყობინებები"),
+    "inbox.new": ("New", "ახალი"),
+    "inbox.earlier": ("Earlier", "ადრე"),
+    "inbox.empty.title": ("All quiet", "ჯერჯერობით სიჩუმეა"),
+    "inbox.empty.message": ("Join requests, approvals and updates will show up here.", "აქ გამოჩნდება მოთხოვნები, დადასტურებები და სიახლეები."),
+    "inbox.join_request %@ %@": ("**%1$@** wants to join **%2$@**", "**%1$@** სურს შეუერთდეს: **%2$@**"),
+    "inbox.member_joined %@ %@": ("**%1$@** joined **%2$@**", "**%1$@** შეუერთდა: **%2$@**"),
+    "inbox.approved %@": ("You're in! See you at **%@**", "შენ წევრი ხარ! შეხვედრამდე: **%@**"),
+    "inbox.declined %@": ("Your request for **%@** wasn't accepted this time", "მოთხოვნა **%@**-ზე ამჯერად არ დადასტურდა"),
+    "inbox.cancelled %@": ("**%@** was cancelled by the host", "მასპინძელმა გააუქმა: **%@**"),
+    "inbox.welcome": ("Welcome to RaVqnat! Take a minute to read how to meet safely.", "კეთილი იყოს შენი მობრძანება RaVqnat-ში! გაეცანი უსაფრთხო შეხვედრის რჩევებს."),
 
     # Stories
     "stories.yours": ("Your story", "შენი ისტორია"),
@@ -549,7 +559,6 @@ STRINGS = {
     "edit.bio.count %lld %lld": ("%1$lld/%2$lld", "%1$lld/%2$lld"),
     "edit.interests": ("Interests", "ინტერესები"),
     "edit.language": ("Preferred language", "სასურველი ენა"),
-    "edit.neighborhood": ("Home neighbourhood", "შენი უბანი"),
     "edit.language.footer": ("Your preferred language is shown to hosts and used for notifications. To change the app's display language, use iOS Settings.", "სასურველი ენა მასპინძლებს ეჩვენებათ და შეტყობინებებისთვის გამოიყენება. აპის ენის შესაცვლელად გამოიყენე iOS-ის პარამეტრები."),
     "photo.choose": ("Choose photo", "ფოტოს არჩევა"),
     "photo.change": ("Change photo", "ფოტოს შეცვლა"),
@@ -607,5 +616,5 @@ DYNAMIC_FAMILIES = {
                              "capacityOutOfRange", "missingNeighborhood", "missingVenue", "missingLocation",
                              "outsideServiceArea", "venueNotConfirmedPublic", "fieldTooLong"],
     "validation.onboarding.": ["nameTooShort", "nameTooLong", "nameInvalid", "notAdult", "noInterests",
-                               "tooManyInterests", "noNeighborhood"],
+                               "tooManyInterests"],
 }

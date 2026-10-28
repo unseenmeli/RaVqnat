@@ -46,8 +46,13 @@ final class ScreensUITests: XCTestCase {
         XCTAssertTrue(explore.waitForExistence(timeout: 5))
         snapshot(app, "17-tabbar")
 
+        // A one-step drag (the case that used to snap back to the starting tab).
+        explore.press(forDuration: 0.5, thenDragTo: app.buttons["tab.map"])
+        XCTAssertTrue(app.buttons["tab.map"].waitForExistence(timeout: 2))
+        XCTAssertTrue(app.buttons["tab.map"].isSelected, "Dragging one step lands on Map")
+
         // Hold the current tab, then slide to the right end of the capsule.
-        explore.press(forDuration: 0.5, thenDragTo: app.buttons["tab.profile"])
+        app.buttons["tab.map"].press(forDuration: 0.5, thenDragTo: app.buttons["tab.profile"])
         XCTAssertTrue(app.buttons["profile.edit"].waitForExistence(timeout: 3), "Dragging to the end lands on Profile")
 
         // Dragging from a tab you are NOT on does nothing; tapping still works.

@@ -12,6 +12,7 @@ enum Route: Hashable {
     case profile(UUID)
     case manage(UUID)
     case safetyCenter
+    case inbox
 }
 
 /// Deep links: `ravqnat://activity/<uuid>`, `ravqnat://chat/<uuid>`, `ravqnat://safety`.

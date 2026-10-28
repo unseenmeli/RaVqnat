@@ -36,13 +36,7 @@ final class OnboardingUITests: XCTestCase {
         next.tap()
 
         snapshot(app, "06-language")
-        next.tap()
-
-        let vake = app.buttons["onboarding.neighborhood.vake"]
-        XCTAssertTrue(vake.waitForExistence(timeout: 3))
-        vake.tap()
-        snapshot(app, "07-neighborhood")
-        next.tap()
+        next.tap() // language is the last step
 
         XCTAssertTrue(app.buttons["explore.filters"].waitForExistence(timeout: 5), "Explore should appear after onboarding")
         snapshot(app, "08-explore")

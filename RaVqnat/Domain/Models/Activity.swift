@@ -182,6 +182,8 @@ enum DateFilter: String, CaseIterable, Sendable, Identifiable {
 struct ActivityQuery: Sendable, Equatable {
     var origin: Coordinate = .tbilisiCenter
     var radiusMeters: Double = 15_000
+    /// Distances are only meaningful (and only returned) when searching around the device.
+    var measuresDistance = false
     var categories: Set<ActivityCategory> = []
     var date: DateFilter = .any
     /// Exact days (Tbilisi calendar, "yyyy-MM-dd") when `date == .custom`.

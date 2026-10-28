@@ -16,7 +16,7 @@ struct ActivityFormView: View {
         .onAppear {
             if model == nil {
                 model = ActivityFormViewModel(mode: mode, activities: env.activities, policy: session.trustPolicy,
-                                              defaultNeighborhood: session.profile?.homeNeighborhoodID)
+                                              defaultNeighborhood: nil)
             }
         }
     }

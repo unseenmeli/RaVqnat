@@ -6,7 +6,7 @@ enum OnboardingValidator {
     static let bioLimit = 300
 
     enum Issue: String, Hashable, Sendable {
-        case nameTooShort, nameTooLong, nameInvalid, notAdult, noInterests, tooManyInterests, noNeighborhood
+        case nameTooShort, nameTooLong, nameInvalid, notAdult, noInterests, tooManyInterests
         var message: String { L10n.dynamic("validation.onboarding.\(rawValue)") }
     }
 
@@ -30,7 +30,6 @@ enum OnboardingValidator {
         if !submission.confirmsAdult { issues.append(.notAdult) }
         if submission.interestIDs.isEmpty { issues.append(.noInterests) }
         if submission.interestIDs.count > maxInterests { issues.append(.tooManyInterests) }
-        if Neighborhood.find(submission.homeNeighborhoodID) == nil { issues.append(.noNeighborhood) }
         return issues
     }
 }

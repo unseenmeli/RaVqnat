@@ -15,7 +15,7 @@ struct ProfileView: View {
                 VStack(spacing: Theme.Spacing.l) {
                     ProfileHeader(
                         name: profile.displayName, avatarURL: profile.avatarURL, isVerified: profile.isVerified,
-                        neighborhoodID: profile.homeNeighborhoodID, bio: profile.bio, interestIDs: profile.interestIDs,
+                        bio: profile.bio, interestIDs: profile.interestIDs,
                         stats: [
                             (String(hosted.count), String(localized: "profile.stat.hosted")),
                             (String(joined.filter { $0.myMembership?.occupiesSpot == true }.count), String(localized: "profile.stat.joined")),
@@ -69,46 +69,44 @@ struct ProfileView: View {
     }
 }
 
-/// Centred header shared by your own and other people's profiles (TikTok/Instagram layout).
+/// Header shared by your own and other people's profiles (Instagram-style layout).
 struct ProfileHeader: View {
     let name: String
     let avatarURL: URL?
     let isVerified: Bool
-    let neighborhoodID: String?
     let bio: String
     let interestIDs: [String]
     let stats: [(value: String, label: String)]
 
     var body: some View {
-        VStack(spacing: Theme.Spacing.m) {
-            AvatarView(name: name, url: avatarURL, size: 96)
-            VStack(spacing: 4) {
+        VStack(alignment: .leading, spacing: Theme.Spacing.m) {
+            // Avatar on the left, stats stacked on the right at the same height.
+            HStack(alignment: .center, spacing: Theme.Spacing.xl) {
+                AvatarView(name: name, url: avatarURL, size: 92)
+                VStack(alignment: .leading, spacing: Theme.Spacing.s) {
+                    ForEach(Array(stats.enumerated()), id: \.offset) { _, stat in
+                        HStack(alignment: .firstTextBaseline, spacing: 6) {
+                            Text(stat.value).font(.headline.monospacedDigit())
+                            Text(stat.label).font(.subheadline).foregroundStyle(Theme.Palette.inkSecondary)
+                        }
+                        .accessibilityElement(children: .combine)
+                    }
+                }
+                Spacer(minLength: 0)
+            }
+            .padding(.horizontal, Theme.Spacing.screen)
+
+            VStack(alignment: .leading, spacing: 4) {
                 HStack(spacing: 4) {
                     Text(name).font(.title3.weight(.bold))
                     if isVerified { VerifiedBadge(size: .subheadline) }
                 }
-                if let hood = Neighborhood.find(neighborhoodID) {
-                    Label(hood.name, systemImage: "mappin").font(.subheadline).foregroundStyle(Theme.Palette.inkSecondary)
+                if !bio.isEmpty {
+                    Text(bio).font(.subheadline).fixedSize(horizontal: false, vertical: true)
                 }
             }
-            HStack(spacing: 0) {
-                ForEach(Array(stats.enumerated()), id: \.offset) { index, stat in
-                    VStack(spacing: 2) {
-                        Text(stat.value).font(.headline.monospacedDigit())
-                        Text(stat.label).font(.footnote).foregroundStyle(Theme.Palette.inkSecondary)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .accessibilityElement(children: .combine)
-                    if index < stats.count - 1 {
-                        Rectangle().fill(Theme.Palette.hairline).frame(width: 1, height: 24)
-                    }
-                }
-            }
-            .padding(.horizontal, Theme.Spacing.xl)
-            if !bio.isEmpty {
-                Text(bio).font(.subheadline).multilineTextAlignment(.center)
-                    .padding(.horizontal, Theme.Spacing.xxl)
-            }
+            .padding(.horizontal, Theme.Spacing.screen)
+
             if !interestIDs.isEmpty {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 6) {
@@ -122,6 +120,7 @@ struct ProfileHeader: View {
                 .scrollBounceBehavior(.basedOnSize, axes: .horizontal)
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .foregroundStyle(Theme.Palette.ink)
     }
 }
@@ -337,7 +336,7 @@ struct PublicProfileView: View {
             VStack(spacing: Theme.Spacing.l) {
                 ProfileHeader(
                     name: profile.displayName, avatarURL: profile.avatarURL, isVerified: profile.isVerified,
-                    neighborhoodID: nil, bio: profile.bio, interestIDs: profile.interestIDs,
+                    bio: profile.bio, interestIDs: profile.interestIDs,
                     stats: [
                         (String(profile.hostedActivityCount), String(localized: "profile.stat.hosted")),
                         (profile.memberSince.formatted(.dateTime.month(.abbreviated).year()), String(localized: "profile.stat.member_since")),
@@ -382,7 +381,7 @@ struct EditProfileView: View {
     @Environment(AppEnvironment.self) private var env
     @Environment(AppSession.self) private var session
     @Environment(\.dismiss) private var dismiss
-    @State private var update = ProfileUpdate(displayName: "", bio: "", interestIDs: [], preferredLanguage: .en, homeNeighborhoodID: nil)
+    @State private var update = ProfileUpdate(displayName: "", bio: "", interestIDs: [], preferredLanguage: .en)
     @State private var photoData: Data?
     @State private var isSaving = false
     @State private var error: AppError?
@@ -413,9 +412,6 @@ struct EditProfileView: View {
                     Picker(selection: $update.preferredLanguage) {
                         ForEach(AppLanguage.allCases) { Text($0.displayName).tag($0) }
                     } label: { Text("edit.language") }
-                    Picker(selection: $update.homeNeighborhoodID) {
-                        ForEach(Neighborhood.all) { Text($0.name).tag(Optional($0.id)) }
-                    } label: { Text("edit.neighborhood") }
                 } footer: { Text("edit.language.footer") }
             }
             .navigationTitle(Text("profile.edit"))
@@ -437,7 +433,7 @@ struct EditProfileView: View {
         .onAppear {
             guard let p = session.profile else { return }
             update = ProfileUpdate(displayName: p.displayName, bio: p.bio, interestIDs: p.interestIDs,
-                                   preferredLanguage: p.preferredLanguage, homeNeighborhoodID: p.homeNeighborhoodID)
+                                   preferredLanguage: p.preferredLanguage)
         }
     }
 

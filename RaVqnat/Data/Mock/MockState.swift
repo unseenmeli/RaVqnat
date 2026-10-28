@@ -9,7 +9,6 @@ struct MockState: Codable, Sendable {
         var avatarURL: URL?
         var interestIDs: [String]
         var preferredLanguage: AppLanguage
-        var homeNeighborhoodID: String?
         var onboardingCompleted: Bool
         var ageAssurance: AgeAssurance
         var verification: VerificationState
@@ -95,6 +94,17 @@ struct MockState: Codable, Sendable {
         var expiresAt: Date
     }
 
+    struct InboxRow: Codable, Sendable {
+        var id: UUID
+        var userID: UUID
+        var kind: InboxKind
+        var activityID: UUID?
+        var actorID: UUID?
+        var activityTitle: String?
+        var createdAt: Date
+        var readAt: Date?
+    }
+
     struct FeedbackRow: Codable, Sendable {
         var activityID: UUID
         var reviewerID: UUID
@@ -104,7 +114,7 @@ struct MockState: Codable, Sendable {
         var createdAt: Date
     }
 
-    var schemaVersion = 2
+    var schemaVersion = 3
     var currentUserID: UUID?
     var users: [UUID: User] = [:]
     var activities: [UUID: ActivityRow] = [:]
@@ -115,6 +125,8 @@ struct MockState: Codable, Sendable {
     var feedback: [FeedbackRow] = []
     var stories: [StoryRow] = []
     var storyViews: [String: Date] = [:]
+    var inbox: [InboxRow] = []
+    var welcomed: Set<UUID> = []
     var readState: [String: Date] = [:]
     var preferences: [UUID: NotificationPreferences] = [:]
     var deviceTokens: [String: UUID] = [:]

@@ -85,7 +85,6 @@ struct MyProfile: Identifiable, Hashable, Sendable {
     var avatarURL: URL?
     var interestIDs: [String]
     var preferredLanguage: AppLanguage
-    var homeNeighborhoodID: String?
     var onboardingCompleted: Bool
     var ageAssurance: AgeAssurance
     var verification: VerificationState
@@ -101,7 +100,6 @@ struct ProfileUpdate: Sendable, Equatable {
     var bio: String
     var interestIDs: [String]
     var preferredLanguage: AppLanguage
-    var homeNeighborhoodID: String?
 }
 
 struct OnboardingSubmission: Sendable, Equatable {
@@ -109,5 +107,4 @@ struct OnboardingSubmission: Sendable, Equatable {
     var confirmsAdult: Bool
     var interestIDs: [String]
     var preferredLanguage: AppLanguage
-    var homeNeighborhoodID: String
 }

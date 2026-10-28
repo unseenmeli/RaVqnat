@@ -67,6 +67,9 @@ private struct RVTabBar: View {
     @State private var itemFrames: [AppTab: CGRect] = [:]
     /// Finger position inside the capsule while scrubbing; nil when not dragging.
     @State private var scrubX: CGFloat?
+    /// After a scrub, the button under the finger's *starting* point would also fire its tap on
+    /// release (and jump back). Taps are ignored during a scrub and briefly after it ends.
+    @State private var ignoreTapsUntil: Date = .distantPast
 
     private var isScrubbing: Bool { scrubX != nil }
     /// While scrubbing every item is the same width, so position maps directly to a tab.
@@ -119,19 +122,26 @@ private struct RVTabBar: View {
                 // Only the page you are on can be picked up.
                 if scrubX == nil {
                     guard itemFrames[selection]?.insetBy(dx: -4, dy: -12).contains(drag.startLocation) == true else { return }
+                    ignoreTapsUntil = .distantFuture
                 }
                 scrubX = drag.location.x
                 guard equalItemWidth > 0 else { return }
                 let index = min(max(Int((drag.location.x - inset) / equalItemWidth), 0), tabs.count - 1)
                 if tabs[index] != selection { selection = tabs[index] }
             }
-            .onEnded { _ in scrubX = nil }
+            .onEnded { _ in
+                if scrubX != nil { ignoreTapsUntil = .now.addingTimeInterval(0.4) }
+                scrubX = nil
+            }
     }
 
     @ViewBuilder private func tabButton(_ tab: AppTab) -> some View {
         let isSelected = selection == tab
         let showsLabel = isSelected && !isScrubbing
-        Button { selection = tab } label: {
+        Button {
+            guard Date.now >= ignoreTapsUntil else { return }
+            selection = tab
+        } label: {
             HStack(spacing: 7) {
                 icon(for: tab, isSelected: isSelected)
                 if showsLabel {
@@ -166,9 +176,9 @@ private struct RVTabBar: View {
     @ViewBuilder private func icon(for tab: AppTab, isSelected: Bool) -> some View {
         switch tab {
         case .explore: TabIcon(asset: "tab-explore", symbol: "square.grid.2x2", isSelected: isSelected, size: 22)
-        case .map: TabIcon(asset: "tab-map", symbol: "location", isSelected: isSelected, size: 21)
+        case .map: TabIcon(asset: "tab-map", symbol: "mappin.square", isSelected: isSelected, size: 22)
         case .chats:
-            TabIcon(asset: "tab-chats", symbol: "message", isSelected: isSelected, size: 22)
+            TabIcon(asset: "tab-chats", symbol: "text.bubble", isSelected: isSelected, size: 22)
                 .overlay(alignment: .topTrailing) {
                     if unreadCount > 0 {
                         Circle().fill(Theme.Palette.accent).frame(width: 9, height: 9)
@@ -256,6 +266,7 @@ extension View {
                 case .profile(let id): PublicProfileView(userID: id)
                 case .manage(let id): HostManageView(activityID: id)
                 case .safetyCenter: SafetyCenterView()
+                case .inbox: InboxView()
                 }
             }
     }

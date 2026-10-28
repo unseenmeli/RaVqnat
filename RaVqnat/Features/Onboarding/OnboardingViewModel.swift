@@ -5,7 +5,7 @@ import Observation
 @Observable
 final class OnboardingViewModel {
     enum Step: Int, CaseIterable, Codable {
-        case name, age, photo, interests, language, neighborhood
+        case name, age, photo, interests, language
     }
 
     struct Draft: Codable, Equatable {
@@ -14,7 +14,6 @@ final class OnboardingViewModel {
         var confirmsAdult = false
         var interestIDs: [String] = []
         var language: AppLanguage = Locale.current.language.languageCode?.identifier == "ka" ? .ka : .en
-        var neighborhoodID: String?
     }
 
     var draft: Draft { didSet { store.save(draft) } }
@@ -45,7 +44,6 @@ final class OnboardingViewModel {
         case .age: draft.confirmsAdult
         case .photo, .language: true
         case .interests: !draft.interestIDs.isEmpty && draft.interestIDs.count <= OnboardingValidator.maxInterests
-        case .neighborhood: draft.neighborhoodID != nil
         }
     }
 
@@ -73,12 +71,11 @@ final class OnboardingViewModel {
     }
 
     private func submit() async -> MyProfile? {
-        guard !isSubmitting, let neighborhood = draft.neighborhoodID else { return nil }
+        guard !isSubmitting else { return nil }
         isSubmitting = true
         defer { isSubmitting = false }
         let submission = OnboardingSubmission(displayName: draft.displayName, confirmsAdult: draft.confirmsAdult,
-                                              interestIDs: draft.interestIDs, preferredLanguage: draft.language,
-                                              homeNeighborhoodID: neighborhood)
+                                              interestIDs: draft.interestIDs, preferredLanguage: draft.language)
         guard OnboardingValidator.issues(for: submission).isEmpty else {
             error = .rule(.invalidInput)
             return nil

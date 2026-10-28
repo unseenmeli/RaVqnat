@@ -122,12 +122,6 @@ private struct OnboardingContent: View {
             OptionList(items: AppLanguage.allCases.map { ($0.id, $0.displayName) }, selected: model.draft.language.id) { id in
                 if let language = AppLanguage(rawValue: id) { model.draft.language = language }
             }
-        case .neighborhood:
-            StepTitle(title: "onboarding.neighborhood.title", subtitle: "onboarding.neighborhood.subtitle")
-            OptionList(items: Neighborhood.all.map { ($0.id, $0.name) }, selected: model.draft.neighborhoodID,
-                       identifierPrefix: "onboarding.neighborhood.") { id in
-                model.draft.neighborhoodID = id
-            }
         }
     }
 

@@ -10,6 +10,7 @@ struct ExploreView: View {
     @State private var showComposer = false
     @State private var viewerStart: StoryViewerStart?
     @State private var pendingJoin: Activity?
+    @State private var unreadNotifications = 0
 
     var body: some View {
         Group {
@@ -20,7 +21,6 @@ struct ExploreView: View {
         .onAppear {
             guard model == nil else { return }
             let model = ExploreViewModel(activities: env.activities, memberships: env.memberships)
-            model.configure(homeNeighborhoodID: session.profile?.homeNeighborhoodID)
             self.model = model
             self.stories = StoriesViewModel(repository: env.stories)
         }
@@ -43,6 +43,9 @@ struct ExploreView: View {
         .refreshable { await model.load(); await stories.load() }
         .task(id: model.query) { await model.load() }
         .task { await stories.load() }
+        .task(id: router.explorePath.count) {
+            if router.explorePath.isEmpty { unreadNotifications = (try? await env.inbox.unreadInboxCount()) ?? 0 }
+        }
         .toast($model.toast)
         .sheet(isPresented: $showFilters) {
             FilterSheet(initial: model.filters) { filters in
@@ -80,6 +83,17 @@ struct ExploreView: View {
             HStack(spacing: Theme.Spacing.s) {
                 Wordmark()
                 Spacer()
+                NavigationLink(value: Route.inbox) { Image(systemName: "bell") }
+                    .buttonStyle(.icon)
+                    .overlay(alignment: .topTrailing) {
+                        if unreadNotifications > 0 {
+                            Circle().fill(Theme.Palette.accent).frame(width: 10, height: 10)
+                                .overlay(Circle().stroke(Theme.Palette.canvas, lineWidth: 2))
+                        }
+                    }
+                    .accessibilityLabel(Text("inbox.title"))
+                    .accessibilityValue(unreadNotifications > 0 ? Text("chats.unread \(unreadNotifications)") : Text(verbatim: ""))
+                    .accessibilityIdentifier("explore.notifications")
                 Button { showFilters = true } label: { Image(systemName: "slider.horizontal.3") }
                     .buttonStyle(.icon)
                     .overlay(alignment: .topTrailing) {

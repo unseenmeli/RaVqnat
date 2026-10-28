@@ -86,6 +86,12 @@ protocol VerificationRepository: Sendable {
     func completeMockVerification(approve: Bool) async throws -> VerificationState
 }
 
+protocol InboxRepository: Sendable {
+    func inbox() async throws -> [InboxItem]
+    func unreadInboxCount() async throws -> Int
+    func markAllRead() async throws
+}
+
 protocol NotificationRepository: Sendable {
     func registerDeviceToken(_ token: String, environment: String) async throws
     func unregisterDeviceToken(_ token: String) async throws

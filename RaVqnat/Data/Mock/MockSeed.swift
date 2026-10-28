@@ -88,7 +88,7 @@ enum MockSeed {
             let id = uid(seed.n)
             state.users[id] = .init(
                 id: id, displayName: seed.name, bio: seed.bio, avatarURL: nil, interestIDs: seed.interests,
-                preferredLanguage: .ka, homeNeighborhoodID: seed.hood, onboardingCompleted: true,
+                preferredLanguage: .ka, onboardingCompleted: true,
                 ageAssurance: .selfDeclared,
                 verification: seed.verified
                     ? .init(status: .verified, verifiedAt: now.addingTimeInterval(-86_400 * 30), expiresAt: now.addingTimeInterval(86_400 * 335), provider: "mock")
@@ -141,7 +141,7 @@ enum MockSeed {
     static func demoUser(now: Date = .now, onboarded: Bool) -> MockState.User {
         .init(id: demoUserID, displayName: onboarded ? "Meli" : "", bio: "", avatarURL: nil,
               interestIDs: onboarded ? ["coffee", "chess"] : [], preferredLanguage: .en,
-              homeNeighborhoodID: onboarded ? "vake" : nil, onboardingCompleted: onboarded,
+              onboardingCompleted: onboarded,
               ageAssurance: onboarded ? .selfDeclared : .none, verification: .unverified,
               restrictions: .none, memberSince: now)
     }

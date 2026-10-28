@@ -102,7 +102,7 @@ actor MockBackend {
             skillLevel: row.skillLevel, equipment: row.equipment, instructions: row.instructions,
             coverImageURL: row.coverImageURL, createdAt: row.createdAt,
             myMembership: viewer.flatMap { v in memberIndex(row.id, v).map { state.members[$0].state } },
-            distanceMeters: origin.map { row.approxCoordinate.distance(to: $0) }
+            distanceMeters: origin.map { LocationPrivacy.roundedDistance(row.approxCoordinate.distance(to: $0)) }
         )
     }
 
@@ -133,6 +133,24 @@ actor MockBackend {
             state.members.append(.init(activityID: activityID, userID: userID, state: newState, note: note,
                                        requestedAt: now, updatedAt: now))
         }
+        notifyTransition(row, memberID: userID, to: newState, actor: actor)
+    }
+
+    /// Mirrors the database trigger that writes in-app notifications for membership changes.
+    private func notifyTransition(_ row: MockState.ActivityRow, memberID: UUID, to newState: MembershipState,
+                                  actor: MembershipStateMachine.Actor) {
+        switch (newState, actor) {
+        case (.pending, _): notify(row.hostID, .joinRequest, activity: row, actor: memberID)
+        case (.approved, .system): notify(row.hostID, .memberJoined, activity: row, actor: memberID)
+        case (.approved, .host): notify(memberID, .requestApproved, activity: row, actor: row.hostID)
+        case (.rejected, _): notify(memberID, .requestDeclined, activity: row, actor: nil)
+        default: break
+        }
+    }
+
+    private func notify(_ userID: UUID, _ kind: InboxKind, activity: MockState.ActivityRow?, actor: UUID?) {
+        state.inbox.append(.init(id: UUID(), userID: userID, kind: kind, activityID: activity?.id, actorID: actor,
+                                 activityTitle: activity?.title, createdAt: now, readAt: nil))
     }
 
     /// Blocks must not end up sharing an activity: the requester can't join if they have a block
@@ -183,8 +201,7 @@ actor MockBackend {
             .prefix(2)
         let notes = ["Hi! I'd love to join.", "Is it okay if I'm a complete beginner?"]
         for (offset, id) in candidates.enumerated() {
-            state.members.append(.init(activityID: activityID, userID: id, state: .pending, note: notes[offset % notes.count],
-                                       requestedAt: now, updatedAt: now))
+            try? transition(activityID, id, to: .pending, actor: .member, note: notes[offset % notes.count])
         }
     }
 
@@ -269,6 +286,7 @@ extension MockBackend: AuthRepository {
         state.messages.removeAll { $0.senderID == nil && $0.body.isEmpty }
         state.blocks.removeAll { $0.blockerID == id || $0.blockedID == id }
         state.feedback.removeAll { $0.reviewerID == id }
+        state.inbox.removeAll { $0.userID == id }
         state.stories.removeAll { $0.authorID == id }
         state.storyViews = state.storyViews.filter { !$0.key.hasSuffix("|\(id)") }
         for index in state.reports.indices {
@@ -289,7 +307,7 @@ extension MockBackend: ProfileRepository {
     private func makeMyProfile(_ user: MockState.User) -> MyProfile {
         MyProfile(id: user.id, displayName: user.displayName, bio: user.bio, avatarURL: user.avatarURL,
                   interestIDs: user.interestIDs, preferredLanguage: user.preferredLanguage,
-                  homeNeighborhoodID: user.homeNeighborhoodID, onboardingCompleted: user.onboardingCompleted,
+                  onboardingCompleted: user.onboardingCompleted,
                   ageAssurance: user.ageAssurance, verification: user.verification,
                   restrictions: user.restrictions, memberSince: user.memberSince)
     }
@@ -306,7 +324,6 @@ extension MockBackend: ProfileRepository {
         user.displayName = OnboardingValidator.normalizedName(submission.displayName)
         user.interestIDs = submission.interestIDs.filter { Interest.find($0) != nil }
         user.preferredLanguage = submission.preferredLanguage
-        user.homeNeighborhoodID = submission.homeNeighborhoodID
         user.ageAssurance = user.ageAssurance == .verified ? .verified : .selfDeclared
         user.onboardingCompleted = true
         state.users[user.id] = user
@@ -323,7 +340,6 @@ extension MockBackend: ProfileRepository {
         user.bio = update.bio.trimmingCharacters(in: .whitespacesAndNewlines)
         user.interestIDs = update.interestIDs.filter { Interest.find($0) != nil }
         user.preferredLanguage = update.preferredLanguage
-        user.homeNeighborhoodID = update.homeNeighborhoodID
         state.users[user.id] = user
         persist()
         return makeMyProfile(user)
@@ -375,7 +391,8 @@ extension MockBackend: ActivityRepository {
         let offset = cursor ?? 0
         let slice = rows.dropFirst(offset).prefix(pageSize)
         let next = offset + slice.count < rows.count ? offset + slice.count : nil
-        return Page(items: slice.map { makeActivity($0, viewer: me.id, origin: query.origin) }, nextCursor: next)
+        return Page(items: slice.map { makeActivity($0, viewer: me.id, origin: query.measuresDistance ? query.origin : nil) },
+                    nextCursor: next)
     }
 
     func activity(id: UUID) async throws -> Activity {
@@ -464,6 +481,9 @@ extension MockBackend: ActivityRepository {
         row.status = .cancelled
         row.updatedAt = now
         state.activities[id] = row
+        for member in state.members where member.activityID == id && [.pending, .approved].contains(member.state) {
+            notify(member.userID, .activityCancelled, activity: row, actor: nil)
+        }
         persist()
     }
 
@@ -672,6 +692,39 @@ extension MockBackend: ChatRepository {
             Task { await self.removeContinuation(activityID: activityID, token: token) }
         }
         return stream
+    }
+}
+
+// MARK: - InboxRepository
+
+extension MockBackend: InboxRepository {
+    func inbox() async throws -> [InboxItem] {
+        let me = try requireUser()
+        if !state.welcomed.contains(me.id) {
+            state.welcomed.insert(me.id)
+            notify(me.id, .welcome, activity: nil, actor: nil)
+            persist()
+        }
+        return state.inbox
+            .filter { $0.userID == me.id && ($0.actorID.map { !isBlocked($0, me.id) } ?? true) }
+            .sorted { $0.createdAt > $1.createdAt }
+            .prefix(100)
+            .map { row in
+                InboxItem(id: row.id, kind: row.kind, activityID: row.activityID, activityTitle: row.activityTitle,
+                          actor: row.actorID.map { summary($0) }, createdAt: row.createdAt, isRead: row.readAt != nil)
+            }
+    }
+
+    func unreadInboxCount() async throws -> Int {
+        try await inbox().filter { !$0.isRead }.count
+    }
+
+    func markAllRead() async throws {
+        let me = try requireUser()
+        for index in state.inbox.indices where state.inbox[index].userID == me.id && state.inbox[index].readAt == nil {
+            state.inbox[index].readAt = now
+        }
+        persist()
     }
 }
 

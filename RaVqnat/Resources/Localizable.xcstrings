@@ -1548,22 +1548,6 @@
         }
       }
     },
-    "edit.neighborhood": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Home neighbourhood"
-          }
-        },
-        "ka": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "შენი უბანი"
-          }
-        }
-      }
-    },
     "emergency.call_112": {
       "localizations": {
         "en": {
@@ -3868,6 +3852,182 @@
         }
       }
     },
+    "inbox.approved %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You're in! See you at **%@**"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "შენ წევრი ხარ! შეხვედრამდე: **%@**"
+          }
+        }
+      }
+    },
+    "inbox.cancelled %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "**%@** was cancelled by the host"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "მასპინძელმა გააუქმა: **%@**"
+          }
+        }
+      }
+    },
+    "inbox.declined %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your request for **%@** wasn't accepted this time"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "მოთხოვნა **%@**-ზე ამჯერად არ დადასტურდა"
+          }
+        }
+      }
+    },
+    "inbox.earlier": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Earlier"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ადრე"
+          }
+        }
+      }
+    },
+    "inbox.empty.message": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Join requests, approvals and updates will show up here."
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "აქ გამოჩნდება მოთხოვნები, დადასტურებები და სიახლეები."
+          }
+        }
+      }
+    },
+    "inbox.empty.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All quiet"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ჯერჯერობით სიჩუმეა"
+          }
+        }
+      }
+    },
+    "inbox.join_request %@ %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "**%1$@** wants to join **%2$@**"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "**%1$@** სურს შეუერთდეს: **%2$@**"
+          }
+        }
+      }
+    },
+    "inbox.member_joined %@ %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "**%1$@** joined **%2$@**"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "**%1$@** შეუერთდა: **%2$@**"
+          }
+        }
+      }
+    },
+    "inbox.new": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ახალი"
+          }
+        }
+      }
+    },
+    "inbox.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notifications"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "შეტყობინებები"
+          }
+        }
+      }
+    },
+    "inbox.welcome": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Welcome to RaVqnat! Take a minute to read how to meet safely."
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "კეთილი იყოს შენი მობრძანება RaVqnat-ში! გაეცანი უსაფრთხო შეხვედრის რჩევებს."
+          }
+        }
+      }
+    },
     "interest.basketball": {
       "extractionState": "manual",
       "localizations": {
@@ -5704,38 +5864,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "რა გქვია?"
-          }
-        }
-      }
-    },
-    "onboarding.neighborhood.subtitle": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Your home area for nearby suggestions. We never share it."
-          }
-        },
-        "ka": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "შენი უბანი ახლომდებარე შეთავაზებებისთვის. არავის ვუზიარებთ."
-          }
-        }
-      }
-    },
-    "onboarding.neighborhood.title": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Where in Tbilisi?"
-          }
-        },
-        "ka": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "თბილისის რომელ უბანში?"
           }
         }
       }
@@ -7784,23 +7912,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "აირჩიე ერთი ინტერესი მაინც."
-          }
-        }
-      }
-    },
-    "validation.onboarding.noNeighborhood": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Choose a neighbourhood."
-          }
-        },
-        "ka": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "აირჩიე უბანი."
           }
         }
       }
